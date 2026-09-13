@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Rajdhani, Inter } from "next/font/google";
 import "./globals.css";
 import { ChatWidgetProvider } from "@/components/chat/ChatWidgetProvider";
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     "Vayuvega is a Kerala-rooted speedster whose powers rise with the southwest monsoon. Ask for help — he's listening.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
