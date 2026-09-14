@@ -10,51 +10,59 @@ export function CostumeBadge({ era, className = "", id }: { era: CostumeEra; cla
           {eraGradientStops(era)}
         </linearGradient>
         <pattern id={`${id}-hatch`} width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-          <rect width="6" height="6" fill="#52525b" />
-          <line x1="0" y1="0" x2="0" y2="6" stroke="#71717a" strokeWidth="1.5" />
+          <rect width="6" height="6" fill="#2c3f56" />
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#3f5468" strokeWidth="1.5" />
         </pattern>
       </defs>
 
-      <path d={SUIT_PATH} fill={era === "poncho" ? `url(#${id}-hatch)` : `url(#${id}-fill)`} opacity={era === "poncho" ? 0.9 : 1} />
-      <path d={SUIT_PATH} fill="none" stroke={eraStrokeColor(era)} strokeWidth="2" opacity="0.8" />
+      <path d={SUIT_PATH} fill={era === "flood-coat" ? `url(#${id}-hatch)` : `url(#${id}-fill)`} />
+      <path d={SUIT_PATH} fill="none" stroke={eraStrokeColor(era)} strokeWidth="2" opacity="0.85" />
 
-      {era === "kasavu-line" && (
+      {era === "flood-coat" && (
         <path
-          d={SUIT_PATH}
+          d="M40 20 h20 v10 h-20 Z"
           fill="none"
-          stroke="#d4af37"
-          strokeWidth="2.5"
-          strokeDasharray="3 3"
+          stroke="#C99A4A"
+          strokeWidth="2"
           opacity="0.9"
-          transform="scale(0.92) translate(4.3 5.3)"
         />
       )}
 
-      {era === "hud-era" && (
-        <g stroke="#d4af37" strokeOpacity="0.5" strokeWidth="0.8">
-          <line x1="26" y1="40" x2="74" y2="40" />
-          <line x1="24" y1="55" x2="76" y2="55" />
-          <line x1="26" y1="70" x2="74" y2="70" />
-          <line x1="40" y1="26" x2="40" y2="100" />
-          <line x1="60" y1="26" x2="60" y2="100" />
+      {era === "windbreaker" && (
+        <g stroke="#C99A4A" strokeWidth="2.5" opacity="0.9">
+          <line x1="20" y1="95" x2="34" y2="95" />
+          <line x1="66" y1="95" x2="80" y2="95" />
         </g>
       )}
 
-      {era === "storm-runner" && (
-        <g stroke="#16a672" strokeWidth="2" strokeLinecap="round" opacity="0.85">
-          <path d="M18 40 L14 60 L18 90" fill="none" />
-          <path d="M82 40 L86 60 L82 90" fill="none" />
-        </g>
+      {era === "waymark" && (
+        <rect x="34" y="48" width="32" height="14" rx="3" fill="none" stroke="#C99A4A" strokeWidth="2.5" opacity="0.9" />
       )}
 
-      {era !== "poncho" && (
-        <g transform="translate(50 52)">
+      {era === "eye-form" && (
+        <path
+          d={SUIT_PATH}
+          fill="none"
+          stroke="#C99A4A"
+          strokeWidth="2"
+          opacity="0.7"
+          transform="scale(0.9) translate(5.5 6.5)"
+        />
+      )}
+
+      {era === "storm-skin" && (
+        <>
           <path
-            d="M-8 0 a8 8 0 0 1 15 -5 a6.5 6.5 0 0 1 10 5 a6 6 0 0 1 -1 12 H-7 a6.5 6.5 0 0 1 -1 -12Z"
-            fill="#0a0a17"
-            opacity="0.85"
+            d={SUIT_PATH}
+            fill="none"
+            stroke="#C99A4A"
+            strokeWidth="2.5"
+            strokeDasharray="2 3"
+            opacity="0.9"
+            transform="scale(0.92) translate(4.3 5.3)"
           />
-        </g>
+          <path d="M50 8 V116" stroke="#C99A4A" strokeWidth="1.5" opacity="0.6" />
+        </>
       )}
     </svg>
   );
@@ -62,39 +70,39 @@ export function CostumeBadge({ era, className = "", id }: { era: CostumeEra; cla
 
 function eraGradientStops(era: CostumeEra) {
   switch (era) {
-    case "first-emblem":
+    case "windbreaker":
       return (
         <>
-          <stop offset="0%" stopColor="#3f5d3f" />
-          <stop offset="100%" stopColor="#8a7328" />
+          <stop offset="0%" stopColor="#1f3348" />
+          <stop offset="100%" stopColor="#2c4560" />
         </>
       );
-    case "storm-runner":
+    case "waymark":
       return (
         <>
-          <stop offset="0%" stopColor="#12253a" />
-          <stop offset="100%" stopColor="#155e42" />
+          <stop offset="0%" stopColor="#1a2c40" />
+          <stop offset="100%" stopColor="#324e6b" />
         </>
       );
-    case "hud-era":
+    case "eye-form":
       return (
         <>
-          <stop offset="0%" stopColor="#0e0e28" />
-          <stop offset="100%" stopColor="#2a2456" />
+          <stop offset="0%" stopColor="#12202e" />
+          <stop offset="100%" stopColor="#22374f" />
         </>
       );
-    case "kasavu-line":
+    case "storm-skin":
       return (
         <>
-          <stop offset="0%" stopColor="#0a0a17" />
-          <stop offset="100%" stopColor="#1c1c33" />
+          <stop offset="0%" stopColor="#0b1622" />
+          <stop offset="100%" stopColor="#1c3049" />
         </>
       );
     default:
       return (
         <>
-          <stop offset="0%" stopColor="#3f3f46" />
-          <stop offset="100%" stopColor="#52525b" />
+          <stop offset="0%" stopColor="#2c3f56" />
+          <stop offset="100%" stopColor="#3a5068" />
         </>
       );
   }
@@ -102,15 +110,9 @@ function eraGradientStops(era: CostumeEra) {
 
 function eraStrokeColor(era: CostumeEra): string {
   switch (era) {
-    case "poncho":
-      return "#71717a";
-    case "first-emblem":
-      return "#d4af37";
-    case "storm-runner":
-      return "#16a672";
-    case "hud-era":
-      return "#d4af37";
-    case "kasavu-line":
-      return "#d4af37";
+    case "flood-coat":
+      return "#5a6f85";
+    default:
+      return "#C99A4A";
   }
 }

@@ -1,44 +1,98 @@
 export const heroContent = {
   name: "Vayuvega",
   malayalamName: "വായുവേഗ",
-  tagline: "The wind remembers every home it has passed over.",
-  subtagline:
-    "A monsoon-born speedster from Kerala's backwaters, listening for whoever needs him next.",
-  originStory: [
-    "Vayuvega was born in a small coastal town where the southwest monsoon makes its first landfall in India every year. Long before he had a name for what he could do, he could feel the wind shift hours before the clouds arrived.",
-    "His first outing wasn't a rescue plan — it was instinct. A flood, a night, a boy who couldn't explain afterward how he'd carried three neighbors to higher ground before the water rose. That was 2006. There was no suit, no emblem, just a coir-textured poncho and a promise he didn't know he was making.",
-    "Twenty years on, the promise has grown wider than floods and landslides. Vayuvega learned that the quietest emergencies — the ones nobody calls a disaster — deserve the same wind at their back.",
+  eyebrow: "KERALA · MONSOON SPEEDSTER · EST. 2006",
+  tagline: "The eye of the storm doesn't shout. It listens, arrives, and is gone before the thunder.",
+  ctaPrimary: "ASK FOR HELP",
+  ctaSecondary: "VIEW CASE HISTORY",
+  stats: [
+    { value: "847", label: "CASES RESOLVED" },
+    { value: "20yr", label: "ACTIVE SERVICE" },
+    { value: "∞", label: "SPEED CLASS" },
   ],
-  powers: [
-    {
-      title: "Monsoon-Bound Speed",
-      description:
-        "His velocity rises and falls with the southwest monsoon — fastest between June and September, when Kerala's own wind system is strongest.",
-    },
-    {
-      title: "Wind Sense",
-      description:
-        "Feels pressure changes and air currents before they arrive, giving him minutes of warning before storms, floods, or landslides.",
-    },
-    {
-      title: "Aerokinetic Control",
-      description:
-        "Can shape and redirect wind into a shield, a lift, or a current strong enough to clear floodwater debris from a rescue path.",
-    },
-    {
-      title: "Stillness",
-      description:
-        "Not a power in the usual sense — the ability to stay calm and steady at the center of the worst weather, literal or otherwise.",
-    },
-  ],
-  missionText:
-    "Vayuvega started as disaster response — floods, landslides, the very real threats that arrive every monsoon season in Kerala. Over twenty years, his mission widened. He realized the people who needed him weren't only the ones caught in a visible emergency. Some were just caught somewhere quieter, with nowhere else to send a signal. His portal exists so that anyone — facing a flood or facing something only they can see — has a way to reach him.",
-  personality: {
-    trait: "The calm center of the storm.",
-    description:
-      "Vayuvega isn't a hot-headed speedster. He listens more than he talks, and he'd rather understand what you need than rush in with an answer. People who've met him describe him the same way, every time: steady.",
-    quote: "I help people who need someone to listen.",
+  windSpeedBadge: "WIND SPEED — Mach 4+",
+  statusBadge: {
+    label: "CURRENT STATUS",
+    status: "On Patrol",
+    location: "Kerala Coast Region",
   },
-  ctaPrimary: "Ask Vayuvega for Help",
-  ctaSecondary: "Tell Vayuvega What's Wrong",
 } as const;
+
+export const originContent = {
+  eyebrow: "ORIGIN · 2006 · THRISSUR, KERALA",
+  headlinePrefix: "Born in the ",
+  headlineGold: "Heart of the Monsoon",
+  paragraphs: [
+    "During the catastrophic Thrissur floods of 2006, seventeen-year-old Arjun Menon was swept into the swollen Periyar river. For three minutes, he was submerged in the full force of the monsoon — and emerged changed.",
+    "The atmospheric pressure event that nearly killed him had instead bonded him with the storm itself. He didn't gain lightning. He gained the wind's patience — the calm, listening quality of the eye at the center of chaos.",
+    "He spent two years learning to move without disturbing. To arrive without announcing. To help without headlines. By 2008, Kerala had a guardian it didn't know it had.",
+  ],
+  credit: {
+    name: "Arjun Menon",
+    meta: "METEOROLOGY STUDENT · THRISSUR · BORN 1989",
+  },
+  eventCard: {
+    label: "ORIGIN EVENT",
+    title: "Thrissur Flood · August 2006",
+    detail: "Periyar River, 3-minute submersion at peak monsoon surge",
+  },
+} as const;
+
+export const missionContent = {
+  eyebrow: "MISSION",
+  headline: "Protect the Vulnerable. Leave No Trace.",
+  subcopy:
+    "Flood evacuation, cyclone response, search and rescue — Vayuvega operates where speed is the difference between life and loss. He does not seek recognition. The only evidence of his presence is that people are safe.",
+} as const;
+
+export interface Power {
+  icon: string;
+  title: string;
+  description: string;
+  stat: string;
+}
+
+export const powers: Power[] = [
+  {
+    icon: "🌪️",
+    title: "Storm Velocity",
+    description:
+      "Sustained speeds exceeding Mach 4 within Kerala's coastal air corridors. Wind pressure alone can redirect flood channels.",
+    stat: "Mach 4.2 sustained",
+  },
+  {
+    icon: "👁️",
+    title: "Eye of the Storm",
+    description:
+      "A zone of perfect calm surrounds Vayuvega in motion — bystanders feel only a warm breeze as he passes at full speed.",
+    stat: "Zero collateral disturbance",
+  },
+  {
+    icon: "🌧️",
+    title: "Monsoon Reading",
+    description:
+      "Can sense atmospheric pressure changes up to 80 km away, predicting weather events and locating crisis zones before they escalate.",
+    stat: "80km sensory radius",
+  },
+  {
+    icon: "💨",
+    title: "Wind Shaping",
+    description:
+      "Precise manipulation of air currents — from redirecting debris fields to creating windbreaks that protect coastal villages during cyclones.",
+    stat: "Category 5 redirect capable",
+  },
+  {
+    icon: "🌊",
+    title: "Rain Resonance",
+    description:
+      "Heightened endurance and recovery during monsoon season. Strength peaks during the June–September window each year.",
+    stat: "Seasonal power amplification",
+  },
+  {
+    icon: "🤫",
+    title: "Subsonic Silence",
+    description:
+      "Movement so precise that arrival produces no sonic boom. The only sound is the distant smell of rain — his calling card.",
+    stat: "No acoustic signature",
+  },
+];

@@ -8,69 +8,129 @@ import { HUDPanel } from "@/components/ui/HUDPanel";
 
 export function CostumeSlider() {
   const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
   const current = costumeData[index];
 
-  const go = (next: number) => {
-    setDirection(next > index ? 1 : -1);
-    setIndex(next);
-  };
-
   return (
-    <section className="mx-auto max-w-3xl px-6 py-24">
-      <h2 className="mb-12 text-center font-display text-3xl tracking-widest text-kasavu">COSTUME EVOLUTION</h2>
+    <section id="costumes" className="mx-auto max-w-6xl px-6 py-24 scroll-mt-20">
+      <div className="text-center">
+        <p className="text-xs font-bold tracking-[0.25em] text-kasavu">COSTUME EVOLUTION · 5 ERAS · 20 YEARS</p>
+        <h2 className="mt-4 font-display text-4xl font-extrabold text-cream sm:text-5xl">
+          The Suit Evolves. <span className="text-kasavu">The Kasavu Remains.</span>
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-mist">
+          From a fisherman&apos;s coat to phase-shift composite — each iteration reflects a lesson learned in the
+          field. The gold border has never left.
+        </p>
+      </div>
 
-      <HUDPanel className="overflow-hidden">
-        <div className="flex items-center justify-between gap-4">
+      <div className="mt-10 flex justify-center gap-2">
+        {costumeData.map((c, i) => (
           <button
-            onClick={() => go(Math.max(0, index - 1))}
-            disabled={index === 0}
-            aria-label="Previous era"
-            className="rounded-full border border-kasavu/30 p-2 text-kasavu disabled:opacity-30"
+            key={c.year}
+            onClick={() => setIndex(i)}
+            className={`rounded-full px-4 py-2 text-xs font-bold tracking-widest transition-colors ${
+              i === index ? "bg-gradient-to-r from-kasavu to-kasavu-soft text-void" : "border border-card-border text-mist hover:text-cream"
+            }`}
           >
-            ←
+            {c.year}
           </button>
+        ))}
+      </div>
 
-          <div className="relative h-64 flex-1 overflow-hidden">
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={current.year}
-                custom={direction}
-                initial={{ x: direction >= 0 ? 60 : -60, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: direction >= 0 ? -60 : 60, opacity: 0 }}
-                transition={{ duration: 0.35 }}
-                className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center"
+      <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`portrait-${current.year}`}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="relative"
+          >
+            <div className="relative flex aspect-[4/5] items-center justify-center rounded-[28px] border border-card-border bg-gradient-to-b from-[#152534] to-[#0b1622]">
+              <div className="absolute left-4 top-4 rounded-full border border-card-border bg-void/70 px-2.5 py-1 text-[9px] font-semibold tracking-wide text-mist backdrop-blur">
+                COSTUME PORTRAIT — PLACEHOLDER
+              </div>
+              <CostumeBadge era={current.era} id={`costume-large-${current.year}`} className="h-2/3 w-2/3" />
+            </div>
+            <div className="absolute inset-x-6 bottom-6 rounded-2xl border border-card-border bg-void/90 p-4 backdrop-blur">
+              <p className="text-xs font-semibold text-mist">{current.year} · {current.material}</p>
+              <p className="font-display text-lg font-bold text-cream">{current.suitName}</p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`lore-${current.year}`}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <p className="text-xs font-bold tracking-widest text-kasavu">ERA {index + 1} OF {costumeData.length}</p>
+            <h3 className="mt-2 font-display text-2xl font-extrabold text-cream">
+              {current.suitName} <span className="text-mist font-medium">· {current.year}</span>
+            </h3>
+            <p className="mt-4 text-mist leading-relaxed">{current.description}</p>
+
+            <HUDPanel className="mt-6">
+              <p className="text-[10px] font-bold tracking-widest text-kasavu">DESIGN DETAILS</p>
+              <ul className="mt-3 space-y-2">
+                {current.details.map((d) => (
+                  <li key={d} className="flex gap-2 text-sm text-mist">
+                    <span className="text-kasavu">•</span>
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </HUDPanel>
+
+            <div className="mt-6">
+              <p className="text-[10px] font-bold tracking-widest text-mist">EVOLUTION PROGRESS</p>
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-card">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-kasavu to-kasavu-soft"
+                  animate={{ width: `${((index + 1) / costumeData.length) * 100}%` }}
+                  transition={{ duration: 0.4 }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setIndex((i) => Math.max(0, i - 1))}
+                disabled={index === 0}
+                className="rounded-full border border-kasavu/40 px-5 py-2 text-xs font-bold tracking-widest text-cream disabled:opacity-30"
               >
-                <CostumeBadge era={current.era} id={`costume-${current.year}`} className="h-28 w-28" />
-                <p className="font-display text-sm tracking-widest text-monsoon">{current.year}</p>
-                <h3 className="font-display text-xl tracking-wide text-kasavu">{current.eraName}</h3>
-                <p className="max-w-md text-sm text-zinc-400">{current.description}</p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                ← Previous Era
+              </button>
+              <button
+                onClick={() => setIndex((i) => Math.min(costumeData.length - 1, i + 1))}
+                disabled={index === costumeData.length - 1}
+                className="rounded-full border border-kasavu/40 px-5 py-2 text-xs font-bold tracking-widest text-cream disabled:opacity-30"
+              >
+                Next Era →
+              </button>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
+      <div className="mt-10 flex justify-center gap-4">
+        {costumeData.map((c, i) => (
           <button
-            onClick={() => go(Math.min(costumeData.length - 1, index + 1))}
-            disabled={index === costumeData.length - 1}
-            aria-label="Next era"
-            className="rounded-full border border-kasavu/30 p-2 text-kasavu disabled:opacity-30"
+            key={c.year}
+            onClick={() => setIndex(i)}
+            aria-label={`Show ${c.suitName}`}
+            className={`h-16 w-16 overflow-hidden rounded-xl border p-2 transition-colors ${
+              i === index ? "border-kasavu bg-card" : "border-card-border bg-void-deep"
+            }`}
           >
-            →
+            <CostumeBadge era={c.era} id={`costume-thumb-${c.year}`} className="h-full w-full" />
           </button>
-        </div>
-
-        <div className="mt-6 flex justify-center gap-2">
-          {costumeData.map((c, i) => (
-            <button
-              key={c.year}
-              onClick={() => go(i)}
-              aria-label={`Show ${c.year} era`}
-              className={`h-2 w-2 rounded-full transition-colors ${i === index ? "bg-kasavu" : "bg-zinc-600"}`}
-            />
-          ))}
-        </div>
-      </HUDPanel>
+        ))}
+      </div>
     </section>
   );
 }

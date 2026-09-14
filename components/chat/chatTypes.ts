@@ -21,6 +21,7 @@ export interface ChatMessage {
   id: string;
   from: "bot" | "user";
   text: string;
+  time: string;
 }
 
 export interface ChatState {

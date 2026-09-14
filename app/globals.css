@@ -1,19 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a17;
-  --foreground: #ededed;
+  --background: #0b1622;
+  --foreground: #f5f1e8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-void: #0a0a17;
-  --color-void-deep: #050509;
-  --color-kasavu: #d4af37;
-  --color-monsoon: #16a672;
+
+  /* Monsoon navy base */
+  --color-void: #0b1622;
+  --color-void-deep: #070d15;
+  --color-card: #13233a;
+  --color-card-border: #22374f;
+
+  /* Kasavu gold accent */
+  --color-kasavu: #c99a4a;
+  --color-kasavu-soft: #d8b268;
+
+  /* Text */
+  --color-cream: #f5f1e8;
+  --color-mist: #8fa3b8;
+
+  /* Status */
+  --color-monsoon: #22c55e;
+  --color-status-green: #22c55e;
+  --color-status-blue: #3b82f6;
+  --color-status-amber: #eab308;
+  --color-status-red: #ef4444;
+
   --font-sans: var(--font-body);
-  --font-display: var(--font-display);
+  --font-display: var(--font-body);
 }
 
 body {
@@ -25,4 +43,22 @@ body {
 ::selection {
   background: var(--color-kasavu);
   color: var(--color-void);
+}
+
+.rain-texture {
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(143, 163, 184, 0.06) 0px,
+    rgba(143, 163, 184, 0.06) 1px,
+    transparent 1px,
+    transparent 14px
+  );
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

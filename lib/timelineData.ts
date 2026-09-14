@@ -1,53 +1,72 @@
-import type { CostumeEra } from "./costumeData";
-
 export interface TimelineEntry {
   year: number;
+  era: string;
+  icon: string;
   title: string;
   blurb: string;
-  costumeEra: CostumeEra;
+  tag: string;
+  stat: string;
 }
 
 export const timelineData: TimelineEntry[] = [
   {
     year: 2006,
-    title: "The First Storm",
+    era: "Era I",
+    icon: "🌊",
+    title: "The First Flood",
     blurb:
-      "His debut, if you can call it that. A flood hit his hometown at night and he moved before he'd decided to. No plan, no suit worth the name — just three neighbors carried to higher ground before sunrise.",
-    costumeEra: "poncho",
+      "Thrissur district, 340 residents evacuated from submerged lowlands before dawn. No official record — only a rumor of wind moving against the current.",
+    tag: "FLOOD RESPONSE",
+    stat: "340 evacuated",
   },
   {
     year: 2011,
-    title: "The Backwater Blackout",
+    era: "Era II",
+    icon: "🌀",
+    title: "Cyclone Phyan Response",
     blurb:
-      "The first time he worked with anyone else — local fishermen and volunteers who knew the canals better than he did. He learned that showing up isn't the same as helping; listening to people who know the ground is.",
-    costumeEra: "first-emblem",
+      'Redirected the storm surge away from three coastal fishing villages near Kozhikode. The meteorology department logged an "anomalous wind pattern" they could not explain.',
+    tag: "CYCLONE DEFLECTION",
+    stat: "3 villages protected",
   },
   {
     year: 2016,
-    title: "Onam Eve Landslide",
+    era: "Era III",
+    icon: "⛰️",
+    title: "Nilgiris Landslide",
     blurb:
-      "A large-scale response, and his first real coordination with emergency services. This is where the public started to trust the name Vayuvega instead of just the rumor of him.",
-    costumeEra: "storm-runner",
+      "Extracted 28 trapped workers from a collapsed tea estate road in under 90 seconds. Workers reported hearing only the sound of rain before finding themselves on safe ground.",
+    tag: "RESCUE OPERATION",
+    stat: "28 workers rescued",
   },
   {
-    year: 2021,
-    title: "The Silent Ward",
+    year: 2019,
+    era: "Era IV",
+    icon: "🏚️",
+    title: "Kerala Floods — Operation Monsoon",
     blurb:
-      "A pivot point. He was called to what looked like nothing — no flood, no headline — and found someone who just needed to be heard. He never went back to only answering disasters after that.",
-    costumeEra: "hud-era",
+      "The worst floods in a century. Vayuvega worked for 72 hours without rest across Ernakulam, Idukki, and Pathanamthitta districts. Over 1,200 direct rescues documented.",
+    tag: "MASS DISASTER RESPONSE",
+    stat: "1,200+ rescued",
   },
   {
-    year: 2024,
-    title: "Flood Season Protocol",
+    year: 2023,
+    era: "Era V",
+    icon: "🌿",
+    title: "Wayanad Crisis",
     blurb:
-      "So many requests were reaching him by then that he built a system to track them — case by case, status by status. The seed of the sightings board you'll find further down this page.",
-    costumeEra: "hud-era",
+      "Mountain rescue following a landslide that cut off six villages. Coordinated with NDRF teams invisibly — they noticed supply caches appearing in inaccessible locations overnight.",
+    tag: "MOUNTAIN RESCUE",
+    stat: "6 villages reached",
   },
   {
     year: 2026,
-    title: "Present Day",
+    era: "Era V+",
+    icon: "⚓",
+    title: "Cyclone Biparjoy — Offshore Rescue",
     blurb:
-      "This website is his most organized effort yet — a direct line, instead of waiting for the wind to carry word of who needs him. If that's you, the signal's already open above.",
-    costumeEra: "kasavu-line",
+      "Fourteen fishing boats capsized 40 km off the Lakshadweep coast during Biparjoy. All 67 crew members reached shore before the coast guard was deployed. Ongoing.",
+    tag: "MARITIME RESCUE",
+    stat: "67 crew returned",
   },
 ];

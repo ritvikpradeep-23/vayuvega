@@ -8,12 +8,21 @@ function nextId(): string {
   return `msg-${idCounter}`;
 }
 
+function formatTime(): string {
+  const now = new Date();
+  let hours = now.getHours() % 12;
+  if (hours === 0) hours = 12;
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  const period = now.getHours() >= 12 ? "pm" : "am";
+  return `${hours.toString().padStart(2, "0")}:${minutes} ${period}`;
+}
+
 function botMessage(text: string) {
-  return { id: nextId(), from: "bot" as const, text };
+  return { id: nextId(), from: "bot" as const, text, time: formatTime() };
 }
 
 function userMessage(text: string) {
-  return { id: nextId(), from: "user" as const, text };
+  return { id: nextId(), from: "user" as const, text, time: formatTime() };
 }
 
 export const initialChatState: ChatState = {
