@@ -1,5 +1,24 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## `/tracker` — Field Ops Tracker
+
+A retro CRT-styled page (`app/tracker`, `components/tracker/*`) with a Kerala-only Leaflet map (hero
+sightings + villain markers, masked to the real state boundary via `@turf/turf` and
+`public/data/kerala-boundary.json`), a suit archive, a rogues gallery with a per-visitor
+"unidentified until investigated" reveal, an ambient HQ Radio dispatch system, a Hero Feed, and a
+scripted dispatch chatbot. A few things worth knowing before touching it:
+
+- **Hero Feed comments are per-browser, not shared.** They're stored in `localStorage`
+  (`vayuvega-hero-feed-v1`), seeded with sample posts on first load. One visitor's post never
+  appears for another visitor — there's no backend behind it. The same is true of villain
+  "reveal" state (`vayuvega-revealed-villains-v1`).
+- **HQ Radio's voice and the theme jingle are both synthesized in the browser** — the radio uses
+  the Web Speech API (`SpeechSynthesisUtterance`) with a text-only fallback when unsupported, and
+  the jingle is a short sequence of Web Audio oscillator notes. No external audio files are used
+  anywhere on this page.
+- **No suit/villain artwork is included.** The suit and villain portrait slots are placeholder SVG
+  shapes in the site's palette (faceless/abstract by design) — real art is a manual drop-in later.
+
 ## Getting Started
 
 First, run the development server:

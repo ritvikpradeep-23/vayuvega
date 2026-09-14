@@ -13,6 +13,7 @@ const LINKS = [
   { label: "SIGHTINGS", href: "/#sightings" },
   { label: "MEDIA", href: "/media" },
   { label: "VILLAINS", href: "/villains" },
+  { label: "TRACKER", href: "/tracker" },
 ];
 
 export function Nav() {
