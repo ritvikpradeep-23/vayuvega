@@ -1,17 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { trackerSuitsData, type TrackerSuitId } from "@/lib/trackerSuitsData";
 import { TrackerSuitBadge } from "./TrackerSuitBadge";
 import styles from "./tracker.module.css";
 
-function SuitDetail({ suitId }: { suitId: TrackerSuitId }) {
+const SuitModel3D = dynamic(() => import("./SuitModel3D"), {
+  ssr: false,
+  loading: () => (
+    <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", fontSize: "0.7rem", color: "var(--text-dim)" }}>
+      Loading 3D model…
+    </div>
+  ),
+});
+
+function SuitDetail({ suitId, compact = false }: { suitId: TrackerSuitId; compact?: boolean }) {
   const suit = trackerSuitsData.find((s) => s.id === suitId);
   if (!suit) return null;
   return (
     <div>
-      <div className={styles.dossierPortraitSmall} style={{ aspectRatio: "3 / 4", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg)" }}>
-        <TrackerSuitBadge suitId={suit.id} id={`compare-${suit.id}`} className="h-2/3 w-2/3" />
+      <div
+        style={{
+          height: compact ? "220px" : "340px",
+          borderRadius: "12px",
+          overflow: "hidden",
+          border: "1px solid var(--panel-border)",
+          background: "var(--bg)",
+        }}
+      >
+        <SuitModel3D suitId={suit.id} />
       </div>
       <p className={styles.dossierNamePlate} style={{ marginTop: "0.6rem" }}>
         {suit.suitName}
@@ -88,8 +106,8 @@ export default function SuitsPanel() {
         <div className={styles.detailPanel}>
           <p className={styles.panelTitle}>COMPARE {selected.length < 2 ? "— select one more suit" : ""}</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "0.6rem" }}>
-            {selected[0] && <SuitDetail suitId={selected[0]} />}
-            {selected[1] && <SuitDetail suitId={selected[1]} />}
+            {selected[0] && <SuitDetail suitId={selected[0]} compact />}
+            {selected[1] && <SuitDetail suitId={selected[1]} compact />}
           </div>
         </div>
       ) : (
