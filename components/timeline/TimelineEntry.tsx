@@ -12,7 +12,7 @@ export function TimelineEntry({ entry, index }: { entry: TimelineEntryData; inde
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
-      className="w-[300px] flex-shrink-0 snap-start rounded-[24px] border p-6"
+      className="h-full rounded-[24px] border p-6"
       style={{
         borderColor: `rgba(201, 154, 74, ${0.15 + intensity * 0.35})`,
         background: "var(--color-card)",

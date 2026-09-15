@@ -21,7 +21,7 @@ export function Nav() {
   const { openChat } = useChatWidget();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-card-border/60 bg-void/90 backdrop-blur-md">
+    <header className="sticky top-0 z-[1100] border-b border-card-border/60 bg-void/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5">
           <WindSpiralIcon className="h-9 w-9" />
@@ -66,7 +66,7 @@ export function Nav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-void lg:hidden"
+            className="fixed inset-0 z-[1100] flex flex-col items-center justify-center gap-8 bg-void lg:hidden"
           >
             <button
               onClick={() => setMenuOpen(false)}

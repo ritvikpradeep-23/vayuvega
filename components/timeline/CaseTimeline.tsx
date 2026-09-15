@@ -34,7 +34,7 @@ export function CaseTimeline() {
         ))}
       </div>
 
-      <div className="scrollbar-none mt-10 flex snap-x gap-6 overflow-x-auto pb-4">
+      <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {timelineData.map((entry, i) => (
           <TimelineEntry key={entry.year} entry={entry} index={i} />
         ))}
