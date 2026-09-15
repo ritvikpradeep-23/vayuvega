@@ -1,4 +1,5 @@
 import { sightingsData } from "./sightingsData";
+import keralaBoundaryGeo from "@/public/data/kerala-boundary.json";
 
 export interface HeroWaypoint {
   id: string;
@@ -81,6 +82,29 @@ const OFFSHORE_LNG_THRESHOLD = 74;
 /** Projects any tracked point (sighting/villain), routing offshore points to the fixed island spot. */
 export function projectPoint(lat: number, lng: number): Point {
   return lng < OFFSHORE_LNG_THRESHOLD ? projectOffshore() : projectGeo(lat, lng);
+}
+
+// The real Kerala state outline (same source data as the Normal Leaflet map's
+// mask), projected into iso-pixel space — used both to draw the state's actual
+// silhouette and to keep buildings/trees inside it instead of a filler rectangle.
+const boundaryRing = (
+  keralaBoundaryGeo as unknown as { geometry: { coordinates: [number, number][][][] } }
+).geometry.coordinates[0][0];
+
+export const keralaOutlinePoints: Point[] = boundaryRing.map(([lng, lat]) => projectGeo(lat, lng));
+
+/** Standard ray-casting point-in-polygon test. */
+export function pointInPolygon(pt: Point, poly: Point[]): boolean {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i].x;
+    const yi = poly[i].y;
+    const xj = poly[j].x;
+    const yj = poly[j].y;
+    const intersect = yi > pt.y !== yj > pt.y && pt.x < ((xj - xi) * (pt.y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
 }
 
 // The hero's patrol route: a north-to-south sweep of the mainland sighting

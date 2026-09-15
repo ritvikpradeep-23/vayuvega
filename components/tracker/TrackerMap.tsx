@@ -124,6 +124,7 @@ export default function TrackerMap({
         });
         L.marker([s.lat, s.lng], { icon, alt: s.location })
           .on("click", () => onSelect({ kind: "hero", data: s }))
+          .bindTooltip(`${s.location} — ${s.status}`, { direction: "top", offset: [0, -8] })
           .addTo(heroLayerRef.current!);
       });
     });
@@ -150,11 +151,13 @@ export default function TrackerMap({
           iconSize: [22, 22],
           iconAnchor: [11, 11],
         });
+        const tooltipText = revealed.has(v.id) ? `${v.codename} — ${v.status}` : "Unidentified — click to investigate";
         L.marker([v.defeatedLocation.lat, v.defeatedLocation.lng], { icon, alt: v.codename })
           .on("click", () => {
             onSelect({ kind: "villain", data: v });
             onReveal(v.id);
           })
+          .bindTooltip(tooltipText, { direction: "top", offset: [0, -8] })
           .addTo(villainLayerRef.current!);
       });
     });
@@ -162,7 +165,7 @@ export default function TrackerMap({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, selected]);
+  }, [ready, selected, revealed]);
 
   // geolocation "you are here"
   useEffect(() => {

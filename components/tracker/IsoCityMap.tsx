@@ -7,6 +7,8 @@ import {
   projectOffshore,
   projectPoint,
   seededRandom,
+  keralaOutlinePoints,
+  pointInPolygon,
   type Point,
 } from "@/lib/heroTrackerData";
 import { sightingsData } from "@/lib/sightingsData";
@@ -80,6 +82,7 @@ const cells: Cell[] = (() => {
     for (let col = 0; col < gridCols; col++) {
       const isLandmark = LANDMARK_CELLS.some((l) => l.col === col && l.row === row);
       const pt = projectIso(col, row);
+      if (!pointInPolygon(pt, keralaOutlinePoints)) continue;
       const nearWaypoint = waypointPixelPts.some((w) => distance(w, pt) < CLEAR_RADIUS);
       const nearRoad = heroRoadEdges.some(
         (e) =>
@@ -111,20 +114,27 @@ export function IsoCityMap({ className = "", children }: { className?: string; c
   const offshorePt = projectOffshore();
   const cellPts = cells.map((c) => projectIso(c.col, c.row));
 
-  const allPts = [...cellPts, ...edgePts, ...sightingPts, ...villainPts, offshorePt];
-  const minX = Math.min(...allPts.map((p) => p.x)) - 80;
-  const maxX = Math.max(...allPts.map((p) => p.x)) + 80;
+  const allPts = [...cellPts, ...edgePts, ...sightingPts, ...villainPts, ...keralaOutlinePoints, offshorePt];
+  const minX = Math.min(...allPts.map((p) => p.x)) - 70;
+  const maxX = Math.max(...allPts.map((p) => p.x)) + 70;
   const minY = Math.min(...allPts.map((p) => p.y)) - 130;
-  const maxY = Math.max(...allPts.map((p) => p.y)) + 60;
+  const maxY = Math.max(...allPts.map((p) => p.y)) + 70;
 
   const kozhikode = sightingsData.find((s) => s.id === "s3")!;
   const seaLaneFrom = projectPoint(kozhikode.lat, kozhikode.lng);
+  const boatSpots = [
+    sightingsData.find((s) => s.id === "s3")!, // Kozhikode Coast
+    sightingsData.find((s) => s.id === "s6")!, // Varkala Cliffs
+  ].map((s) => {
+    const p = projectPoint(s.lat, s.lng);
+    return { x: p.x - 55, y: p.y + 12 };
+  });
 
   return (
     <svg
       viewBox={`${minX} ${minY} ${maxX - minX} ${maxY - minY}`}
       className={className}
-      preserveAspectRatio="xMidYMid slice"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
       <defs>
@@ -140,17 +150,18 @@ export function IsoCityMap({ className = "", children }: { className?: string; c
 
       <rect x={minX} y={minY} width={maxX - minX} height={maxY - minY} fill="#071214" />
 
+      {/* real Kerala state outline — same source boundary as the Normal map's mask */}
       <polygon
-        points={`${minX},${minY} ${minX + 180},${minY} ${minX + 55},${maxY} ${minX},${maxY}`}
-        fill="url(#isoWater)"
+        points={keralaOutlinePoints.map((p) => `${p.x},${p.y}`).join(" ")}
+        fill="none"
+        stroke="#4dfff0"
+        strokeWidth={2}
+        opacity={0.6}
       />
 
-      {/* a couple of small boats on the coastal water, purely decorative */}
-      {[
-        [minX + 60, minY + (maxY - minY) * 0.22],
-        [minX + 100, minY + (maxY - minY) * 0.46],
-      ].map(([bx, by], i) => (
-        <g key={`boat-${i}`} transform={`translate(${bx}, ${by})`}>
+      {/* a couple of small boats just off the coast, purely decorative */}
+      {boatSpots.map((p, i) => (
+        <g key={`boat-${i}`} transform={`translate(${p.x}, ${p.y})`}>
           <polygon points="-9,3 9,3 5,8 -5,8" fill="#1c4644" stroke="#4dfff0" strokeWidth={0.6} opacity={0.8} />
           <line x1={0} y1={3} x2={0} y2={-7} stroke="#4dfff0" strokeWidth={0.8} opacity={0.7} />
         </g>

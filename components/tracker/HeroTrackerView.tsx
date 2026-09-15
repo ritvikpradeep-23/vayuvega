@@ -127,16 +127,18 @@ export default function HeroTrackerView() {
         </g>
       </IsoCityMap>
 
-      <div className={styles.isoHud}>
-        <span className={styles.isoHudChip}>WIND · SW 6KM/H</span>
-        <span className={styles.isoHudChip}>SIGNAL CLEAR</span>
-      </div>
+      <div className={styles.isoTopBar}>
+        <div className={styles.isoLegend}>
+          <span><i style={{ background: "#22c55e" }} /> Resolved</span>
+          <span><i style={{ background: "#eab308" }} /> Reported</span>
+          <span><i style={{ background: "#f97316" }} /> On It</span>
+          <span><i style={{ background: "#ef4444" }} /> Villain</span>
+        </div>
 
-      <div className={styles.isoLegend}>
-        <span><i style={{ background: "#22c55e" }} /> Resolved</span>
-        <span><i style={{ background: "#eab308" }} /> Reported</span>
-        <span><i style={{ background: "#f97316" }} /> On It</span>
-        <span><i style={{ background: "#ef4444" }} /> Villain</span>
+        <div className={styles.isoHud}>
+          <span className={styles.isoHudChip}>WIND · SW 6KM/H</span>
+          <span className={styles.isoHudChip}>SIGNAL CLEAR</span>
+        </div>
       </div>
 
       <div className={styles.isoRail}>
