@@ -1,7 +1,6 @@
 import type { TrackerSuitId } from "@/lib/trackerSuitsData";
 
 const SUIT_PATH = "M50 8 L86 26 V60 C86 90 68 106 50 116 C32 106 14 90 14 60 V26 Z";
-const SPIRAL_PATH = "M50 34 a10 10 0 1 1 -7 17 a5 5 0 1 0 3.5 -8.5";
 
 export function TrackerSuitBadge({ id, className = "", suitId }: { id: string; className?: string; suitId: TrackerSuitId }) {
   return (
@@ -11,68 +10,65 @@ export function TrackerSuitBadge({ id, className = "", suitId }: { id: string; c
           {fillStops(suitId)}
         </linearGradient>
         <pattern id={`${id}-dots`} width="8" height="8" patternUnits="userSpaceOnUse">
-          <circle cx="2" cy="2" r="0.7" fill="#2a3336" />
+          <circle cx="2" cy="2" r="0.7" fill="#20302f" />
         </pattern>
       </defs>
 
       <path d={SUIT_PATH} fill={suitId === "kayal-stealth" ? `url(#${id}-dots)` : `url(#${id}-fill)`} />
       <path d={SUIT_PATH} fill="none" stroke={strokeColor(suitId)} strokeWidth="2" opacity="0.85" />
 
-      {suitId === "monsoon-weave" && (
+      {suitId === "thattu" && (
         <>
-          <g stroke="#4dfff0" strokeWidth="1.2" opacity="0.55">
-            <line x1="20" y1="40" x2="80" y2="40" />
-            <line x1="20" y1="58" x2="80" y2="58" />
-            <line x1="20" y1="76" x2="80" y2="76" />
+          <g stroke="#8b8aa8" strokeWidth="1" opacity="0.6">
+            <line x1="26" y1="34" x2="66" y2="70" />
+            <line x1="34" y1="34" x2="74" y2="70" />
+            <line x1="66" y1="34" x2="26" y2="70" />
+            <line x1="74" y1="34" x2="34" y2="70" />
           </g>
-          <path d={SPIRAL_PATH} fill="none" stroke="#4dfff0" strokeWidth="2.5" opacity="0.9" />
+          <circle cx="24" cy="72" r="3" fill="none" stroke="#8b8aa8" strokeWidth="1.5" />
+          <circle cx="76" cy="72" r="3" fill="none" stroke="#8b8aa8" strokeWidth="1.5" />
+          <circle cx="30" cy="98" r="3" fill="none" stroke="#8b8aa8" strokeWidth="1.5" />
+          <circle cx="70" cy="98" r="3" fill="none" stroke="#8b8aa8" strokeWidth="1.5" />
+        </>
+      )}
+
+      {suitId === "kera-tech" && (
+        <>
+          <line x1="50" y1="20" x2="50" y2="108" stroke="#4dfff0" strokeWidth="1.5" opacity="0.75" />
+          <path d="M18 44 Q4 40 6 54 Q16 56 24 48 Z" fill="none" stroke="#4dfff0" strokeWidth="1.5" opacity="0.85" />
+          <path d="M82 44 Q96 40 94 54 Q84 56 76 48 Z" fill="none" stroke="#4dfff0" strokeWidth="1.5" opacity="0.85" />
         </>
       )}
 
       {suitId === "kayal-stealth" && (
-        <circle cx="50" cy="68" r="4" fill="#f5a623" opacity="0.9">
-          <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.2s" repeatCount="indefinite" />
-        </circle>
+        <>
+          <circle cx="74" cy="66" r="6" fill="none" stroke="#1f6b6b" strokeWidth="1.5" opacity="0.9" />
+          <circle cx="74" cy="66" r="2" fill="#1f6b6b" opacity="0.9" />
+          <path d="M30 108 l-6 8 M42 112 l-4 8" stroke="#1f6b6b" strokeWidth="1.5" opacity="0.7" />
+        </>
       )}
 
-      {suitId === "onam-festival" && (
-        <g stroke="#d4af37" strokeWidth="2" opacity="0.9">
-          <line x1="18" y1="30" x2="18" y2="90" />
-          <line x1="82" y1="30" x2="82" y2="90" />
-          <line x1="24" y1="20" x2="76" y2="20" />
-          <path d={SPIRAL_PATH} stroke="#d4af37" fill="none" strokeWidth="2.5" />
+      {suitId === "kaithapoo-storm" && (
+        <>
+          <path d="M22 30 Q50 12 78 30" fill="none" stroke="#ffe14d" strokeWidth="2" opacity="0.85" />
+          <path d="M52 22 L42 56 L52 56 L46 96 L64 50 L52 50 Z" fill="#ffe14d" opacity="0.85" />
+          <circle cx="20" cy="62" r="4" fill="none" stroke="#ffe14d" strokeWidth="1.5" opacity="0.8" />
+          <circle cx="80" cy="62" r="4" fill="none" stroke="#ffe14d" strokeWidth="1.5" opacity="0.8" />
+        </>
+      )}
+
+      {suitId === "theyyam-integrated" && (
+        <g stroke="#d4af37" strokeWidth="1.5" opacity="0.9">
+          <line x1="50" y1="10" x2="50" y2="-6" />
+          <line x1="50" y1="10" x2="36" y2="-2" />
+          <line x1="50" y1="10" x2="64" y2="-2" />
+          <line x1="50" y1="10" x2="26" y2="10" />
+          <line x1="50" y1="10" x2="74" y2="10" />
+          <circle cx="44" cy="24" r="1.6" fill="#d4af37" stroke="none" />
+          <circle cx="56" cy="24" r="1.6" fill="#d4af37" stroke="none" />
+          <circle cx="18" cy="34" r="2.5" fill="none" />
+          <circle cx="82" cy="34" r="2.5" fill="none" />
         </g>
-      )}
-
-      {suitId === "signal-storm" && (
-        <>
-          <path d="M58 14 L40 62 L54 62 L44 112 L74 54 L58 54 Z" fill="#ff7a30" opacity="0.85" />
-          <g stroke="#ff7a30" strokeWidth="1" opacity="0.5">
-            <line x1="14" y1="48" x2="30" y2="48" />
-            <line x1="14" y1="66" x2="30" y2="66" />
-            <line x1="14" y1="84" x2="30" y2="84" />
-          </g>
-          <circle cx="24" cy="100" r="5" fill="none" stroke="#ff7a30" strokeWidth="1.5" />
-          <circle cx="76" cy="100" r="5" fill="none" stroke="#ff7a30" strokeWidth="1.5" />
-        </>
-      )}
-
-      {suitId === "backup-stitch" && (
-        <>
-          <rect x="30" y="44" width="26" height="22" fill="#2a4a46" opacity="0.9" />
-          <rect
-            x="30"
-            y="44"
-            width="26"
-            height="22"
-            fill="none"
-            stroke="#7fb8b0"
-            strokeWidth="1.5"
-            strokeDasharray="2 2"
-            opacity="0.9"
-          />
-          <line x1="30" y1="55" x2="56" y2="55" stroke="#7fb8b0" strokeWidth="1" strokeDasharray="1.5 1.5" opacity="0.7" />
-        </>
       )}
     </svg>
   );
@@ -80,32 +76,32 @@ export function TrackerSuitBadge({ id, className = "", suitId }: { id: string; c
 
 function fillStops(suitId: TrackerSuitId) {
   switch (suitId) {
-    case "monsoon-weave":
+    case "thattu":
       return (
         <>
-          <stop offset="0%" stopColor="#20282a" />
-          <stop offset="100%" stopColor="#2d3a3c" />
+          <stop offset="0%" stopColor="#2a2419" />
+          <stop offset="100%" stopColor="#3a3226" />
         </>
       );
-    case "onam-festival":
+    case "kera-tech":
       return (
         <>
-          <stop offset="0%" stopColor="#7a1f26" />
-          <stop offset="100%" stopColor="#9c2b33" />
+          <stop offset="0%" stopColor="#3a2a18" />
+          <stop offset="100%" stopColor="#4a3420" />
         </>
       );
-    case "signal-storm":
+    case "kaithapoo-storm":
       return (
         <>
-          <stop offset="0%" stopColor="#211a45" />
-          <stop offset="100%" stopColor="#2c2560" />
+          <stop offset="0%" stopColor="#3a3d42" />
+          <stop offset="100%" stopColor="#4a4d52" />
         </>
       );
-    case "backup-stitch":
+    case "theyyam-integrated":
       return (
         <>
-          <stop offset="0%" stopColor="#20282a" />
-          <stop offset="100%" stopColor="#2d3a3c" />
+          <stop offset="0%" stopColor="#5a1a20" />
+          <stop offset="100%" stopColor="#6e1e24" />
         </>
       );
     default:
@@ -120,15 +116,15 @@ function fillStops(suitId: TrackerSuitId) {
 
 function strokeColor(suitId: TrackerSuitId): string {
   switch (suitId) {
-    case "monsoon-weave":
+    case "thattu":
+      return "#8b8aa8";
+    case "kera-tech":
       return "#4dfff0";
     case "kayal-stealth":
-      return "#6f9a95";
-    case "onam-festival":
+      return "#1f6b6b";
+    case "kaithapoo-storm":
+      return "#ffe14d";
+    case "theyyam-integrated":
       return "#d4af37";
-    case "signal-storm":
-      return "#ff7a30";
-    case "backup-stitch":
-      return "#7fb8b0";
   }
 }

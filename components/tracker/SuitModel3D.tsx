@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, RoundedBox, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
@@ -13,11 +13,11 @@ interface SuitTheme {
 }
 
 const SUIT_THEME: Record<TrackerSuitId, SuitTheme> = {
-  "monsoon-weave": { base: "#2d3a3c", baseDark: "#1a2223", accent: "#4dfff0" },
-  "kayal-stealth": { base: "#17181a", baseDark: "#0c0d0e", accent: "#f5a623" },
-  "onam-festival": { base: "#9c2b33", baseDark: "#6e1e24", accent: "#d4af37" },
-  "signal-storm": { base: "#2c2560", baseDark: "#1c1740", accent: "#ff7a30" },
-  "backup-stitch": { base: "#2d3a3c", baseDark: "#1a2223", accent: "#7fb8b0" },
+  thattu: { base: "#3a3226", baseDark: "#211c14", accent: "#8b8aa8" },
+  "kera-tech": { base: "#4a3420", baseDark: "#2e2012", accent: "#4dfff0" },
+  "kayal-stealth": { base: "#17181a", baseDark: "#0c0d0e", accent: "#2fa0a0" },
+  "kaithapoo-storm": { base: "#4a4d52", baseDark: "#2e3033", accent: "#ffe14d" },
+  "theyyam-integrated": { base: "#6e1e24", baseDark: "#4a1418", accent: "#d4af37" },
 };
 
 function PulseGlow({ color, position }: { color: string; position: [number, number, number] }) {
@@ -35,87 +35,137 @@ function PulseGlow({ color, position }: { color: string; position: [number, numb
 }
 
 function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string }) {
-  const patchGeom = useMemo(() => new THREE.BoxGeometry(0.22, 0.18, 0.02), []);
-
   switch (suitId) {
-    case "monsoon-weave":
+    case "thattu":
       return (
         <group>
-          {[0.68, 0.86, 1.04].map((y) => (
-            <mesh key={y} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]}>
-              <torusGeometry args={[0.3, 0.012, 8, 32]} />
-              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.8} toneMapped={false} />
+          {/* coir-rope webbing lattice across the chest */}
+          {[
+            [Math.PI / 4, 0.75],
+            [-Math.PI / 4, 0.75],
+            [Math.PI / 4, 0.97],
+            [-Math.PI / 4, 0.97],
+          ].map(([rot, y], i) => (
+            <mesh key={`x${i}`} position={[0, y, 0.15]} rotation={[0, 0, rot]}>
+              <boxGeometry args={[0.42, 0.014, 0.01]} />
+              <meshStandardMaterial color={accent} roughness={0.9} />
             </mesh>
           ))}
-          <mesh position={[0, 0.95, 0.15]}>
-            <torusGeometry args={[0.07, 0.014, 8, 24]} />
-            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={1} toneMapped={false} />
-          </mesh>
+          {/* salvaged bicycle-chain joints */}
+          {[
+            [-0.34, 0.42],
+            [0.34, 0.42],
+            [-0.11, 0.05],
+            [0.11, 0.05],
+          ].map(([x, y], i) => (
+            <mesh key={`j${i}`} position={[x, y, 0.08]}>
+              <torusGeometry args={[0.045, 0.012, 8, 16]} />
+              <meshStandardMaterial color={accent} metalness={0.6} roughness={0.4} />
+            </mesh>
+          ))}
+        </group>
+      );
+    case "kera-tech":
+      return (
+        <group>
+          {[0.65, 0.82, 1.0, 1.17].map((y) => (
+            <mesh key={y} position={[0, y, 0.145]}>
+              <boxGeometry args={[0.03, 0.06, 0.01]} />
+              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.9} toneMapped={false} />
+            </mesh>
+          ))}
+          {[-1, 1].map((side) => (
+            <mesh
+              key={side}
+              position={[side * 0.42, 0.66, -0.04]}
+              rotation={[0, 0, side * -0.55]}
+            >
+              <coneGeometry args={[0.02, 0.38, 3]} />
+              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.5} toneMapped={false} />
+            </mesh>
+          ))}
         </group>
       );
     case "kayal-stealth":
       return (
         <group>
-          <mesh position={[0, 1.42, -0.05]}>
-            <sphereGeometry args={[0.21, 16, 16]} />
-            <meshStandardMaterial color="#0c0d0e" roughness={0.9} />
+          <mesh position={[0.34, 0.36, 0.03]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.06, 0.013, 8, 24]} />
+            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.8} toneMapped={false} />
           </mesh>
-          <PulseGlow color={accent} position={[0, 0.95, 0.16]} />
-        </group>
-      );
-    case "onam-festival":
-      return (
-        <group>
-          {[-0.34, 0.34].map((x) => (
-            <mesh key={x} position={[x, 0.58, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <torusGeometry args={[0.09, 0.016, 8, 24]} />
-              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.6} toneMapped={false} />
+          <PulseGlow color={accent} position={[0.34, 0.36, 0.03]} />
+          {[-0.11, 0.11].map((x) => (
+            <mesh key={x} position={[x, 0.02, -0.02]} rotation={[Math.PI / 2, 0, 0]}>
+              <coneGeometry args={[0.05, 0.06, 12]} />
+              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.5} toneMapped={false} />
             </mesh>
           ))}
-          <mesh position={[0, 1.18, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.26, 0.02, 8, 32]} />
-            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.6} toneMapped={false} />
-          </mesh>
-          <mesh position={[0, 0.95, 0.15]}>
-            <torusGeometry args={[0.07, 0.014, 8, 24]} />
-            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={1} toneMapped={false} />
-          </mesh>
         </group>
       );
-    case "signal-storm": {
+    case "kaithapoo-storm": {
       const bolt = new THREE.Shape();
-      bolt.moveTo(0, 0.3);
-      bolt.lineTo(-0.08, 0.05);
-      bolt.lineTo(0.02, 0.05);
-      bolt.lineTo(-0.06, -0.3);
-      bolt.lineTo(0.1, -0.02);
-      bolt.lineTo(0, -0.02);
-      bolt.lineTo(0, 0.3);
+      bolt.moveTo(0, 0.22);
+      bolt.lineTo(-0.06, 0.03);
+      bolt.lineTo(0.015, 0.03);
+      bolt.lineTo(-0.045, -0.22);
+      bolt.lineTo(0.075, -0.01);
+      bolt.lineTo(0, -0.01);
+      bolt.lineTo(0, 0.22);
       return (
         <group>
-          <mesh position={[-0.04, 0.95, 0.16]}>
-            <extrudeGeometry args={[bolt, { depth: 0.03, bevelEnabled: false }]} />
+          <mesh position={[0, 0.86, -0.16]} rotation={[0, Math.PI, 0]}>
+            <torusGeometry args={[0.3, 0.03, 8, 24, Math.PI * 0.6]} />
+            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.4} toneMapped={false} />
+          </mesh>
+          <mesh position={[0.02, 0.9, -0.16]}>
+            <extrudeGeometry args={[bolt, { depth: 0.02, bevelEnabled: false }]} />
             <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.9} toneMapped={false} />
           </mesh>
           {[-0.34, 0.34].map((x) => (
             <mesh key={x} position={[x, 0.58, 0.05]} rotation={[0, 0, Math.PI / 2]}>
               <torusGeometry args={[0.08, 0.018, 8, 20]} />
-              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.7} toneMapped={false} />
+              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.6} toneMapped={false} />
             </mesh>
           ))}
         </group>
       );
     }
-    case "backup-stitch":
+    case "theyyam-integrated":
       return (
-        <group position={[0.05, 0.95, 0.15]}>
-          <mesh geometry={patchGeom}>
-            <meshStandardMaterial color="#3a5450" roughness={0.8} />
-          </mesh>
-          <lineSegments>
-            <edgesGeometry args={[patchGeom]} />
-            <lineBasicMaterial color={accent} />
-          </lineSegments>
+        <group>
+          {/* Theyyam-inspired headdress, radiating from the crown */}
+          {Array.from({ length: 7 }).map((_, i) => {
+            const angle = (i / 6) * Math.PI - Math.PI / 2;
+            return (
+              <mesh
+                key={i}
+                position={[Math.sin(angle) * 0.22, 1.56 + Math.cos(angle) * 0.1, -0.04]}
+                rotation={[0, 0, -angle]}
+              >
+                <coneGeometry args={[0.02, 0.22, 4]} />
+                <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.6} toneMapped={false} />
+              </mesh>
+            );
+          })}
+          {/* HUD lenses */}
+          {[-0.05, 0.05].map((x) => (
+            <mesh key={x} position={[x, 1.37, 0.15]}>
+              <sphereGeometry args={[0.02, 12, 12]} />
+              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={1} toneMapped={false} />
+            </mesh>
+          ))}
+          {/* temple-brass joint rings */}
+          {[
+            [-0.34, 0.58],
+            [0.34, 0.58],
+            [-0.11, 0.55],
+            [0.11, 0.55],
+          ].map(([x, y], i) => (
+            <mesh key={i} position={[x, y, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <torusGeometry args={[0.075, 0.014, 8, 20]} />
+              <meshStandardMaterial color={accent} metalness={0.7} roughness={0.3} emissive={accent} emissiveIntensity={0.3} toneMapped={false} />
+            </mesh>
+          ))}
         </group>
       );
   }

@@ -1,9 +1,4 @@
-export type TrackerSuitId =
-  | "monsoon-weave"
-  | "kayal-stealth"
-  | "onam-festival"
-  | "signal-storm"
-  | "backup-stitch";
+export type TrackerSuitId = "thattu" | "kera-tech" | "kayal-stealth" | "kaithapoo-storm" | "theyyam-integrated";
 
 export interface TrackerSuit {
   id: TrackerSuitId;
@@ -14,33 +9,33 @@ export interface TrackerSuit {
 
 export const trackerSuitsData: TrackerSuit[] = [
   {
-    id: "monsoon-weave",
-    suitName: "Monsoon Weave",
-    usedFor: "First confirmed sighting, Kochi backwaters, monsoon season.",
-    caption: "First logged appearance. Built to be seen through a downpour, not to be missed.",
+    id: "thattu",
+    suitName: "Thattu Suit",
+    usedFor: "His first few weeks, before anyone was backing him — built from whatever was on hand.",
+    caption: "Coir-rope webbing, salvaged bicycle-chain joints. No power source. Everything manual.",
+  },
+  {
+    id: "kera-tech",
+    suitName: "Kera Tech Suit",
+    usedFor: "After a local college robotics lab started quietly supplying him gear.",
+    caption: "Coconut-fiber composite plating, retractable palm-frond glider fins, bioluminescent night piping.",
   },
   {
     id: "kayal-stealth",
-    suitName: "Kayal Stealth",
-    usedFor: "Night operations tracking smuggling activity along the backwaters.",
-    caption: "No shine, no signal — until there's a reason for one.",
+    suitName: "Kayal Stealth Suit",
+    usedFor: "Night operations over the backwaters, where he needed to not be seen or heard.",
+    caption: "Wrist sonar unit, silent ankle thrusters, matte moisture-wicking weave.",
   },
   {
-    id: "onam-festival",
-    suitName: "Onam Festival Suit",
-    usedFor: "Public appearance at an Onam celebration, Thrissur.",
-    caption: "Made for a parade, not a punch-up.",
+    id: "kaithapoo-storm",
+    suitName: "Kaithapoo Storm Suit",
+    usedFor: "Monsoon season, when every other suit failed in the rain.",
+    caption: "Fold-out umbrella-carapace, forearm wind-turbine chargers, a spinal lightning-rod ground strip.",
   },
   {
-    id: "signal-storm",
-    suitName: "Signal Storm",
-    usedFor: "Rooftop chase during a lightning storm, Kozhikode.",
-    caption: "Built the week the signal kept cutting out.",
-  },
-  {
-    id: "backup-stitch",
-    suitName: "Backup Stitch",
-    usedFor: "Emergency patch-up after Monsoon Weave was torn mid-fight; worn for two weeks before a proper replacement was ready.",
-    caption: "Held together with duct tape and stubbornness. Retired the day the real fix arrived.",
+    id: "theyyam-integrated",
+    suitName: "Theyyam Integrated Suit",
+    usedFor: "Now — his most advanced suit, fusing tech from every suit before it.",
+    caption: "Theyyam-inspired headdress silhouette, temple-brass joints, integrated HUD lenses, fire-resistant coating.",
   },
 ];
