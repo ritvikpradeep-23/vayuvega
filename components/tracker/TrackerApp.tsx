@@ -7,6 +7,7 @@ import { loadRevealed, saveRevealed } from "@/lib/villainReveal";
 import { playJingle, speak, speechSupported } from "./audio";
 import TabBar, { type TrackerTab } from "./TabBar";
 import TrackerMap, { type SelectedEntity, type FlyToRequest } from "./TrackerMap";
+import HeroTrackerView from "./HeroTrackerView";
 import SuitsPanel from "./SuitsPanel";
 import VillainsPanel from "./VillainsPanel";
 import HeroFeed from "./HeroFeed";
@@ -23,6 +24,7 @@ const BROADCAST_VISIBLE_MS = 7_000;
 
 export default function TrackerApp() {
   const [tab, setTab] = useState<TrackerTab>("map");
+  const [mapMode, setMapMode] = useState<"normal" | "3d">("normal");
   const [selected, setSelected] = useState<SelectedEntity | null>(null);
   const [flyTo, setFlyTo] = useState<FlyToRequest | null>(null);
   const [muted, setMuted] = useState(false);
@@ -112,13 +114,35 @@ export default function TrackerApp() {
       <TabBar active={tab} onChange={setTab} />
 
       {tab === "map" && (
-        <TrackerMap
-          selected={selected}
-          onSelect={setSelected}
-          flyTo={flyTo}
-          revealed={revealed}
-          onReveal={handleReveal}
-        />
+        <div className={styles.panelBody}>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginBottom: "0.7rem" }}>
+            <button
+              onClick={() => setMapMode("normal")}
+              className={styles.tabBtn}
+              style={mapMode === "normal" ? { color: "var(--cyan)", borderColor: "var(--cyan)" } : undefined}
+            >
+              NORMAL
+            </button>
+            <button
+              onClick={() => setMapMode("3d")}
+              className={styles.tabBtn}
+              style={mapMode === "3d" ? { color: "var(--cyan)", borderColor: "var(--cyan)" } : undefined}
+            >
+              3D
+            </button>
+          </div>
+          {mapMode === "normal" ? (
+            <TrackerMap
+              selected={selected}
+              onSelect={setSelected}
+              flyTo={flyTo}
+              revealed={revealed}
+              onReveal={handleReveal}
+            />
+          ) : (
+            <HeroTrackerView />
+          )}
+        </div>
       )}
       {tab === "suits" && <SuitsPanel />}
       {tab === "villains" && (
