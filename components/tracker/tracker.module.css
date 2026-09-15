@@ -652,7 +652,7 @@
   position: fixed;
   bottom: 1.2rem;
   right: 1.2rem;
-  z-index: 200;
+  z-index: 1200;
   font-family: var(--font-share-tech), monospace;
 }
 .chatToggle {

@@ -87,7 +87,7 @@ export function Chatbot() {
             exit={{ opacity: 0, scale: 0.6 }}
             onClick={openChat}
             aria-label="Open chat with Vayuvega"
-            className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-kasavu to-kasavu-soft shadow-lg shadow-kasavu/30"
+            className="fixed bottom-6 right-6 z-[1200] flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-kasavu to-kasavu-soft shadow-lg shadow-kasavu/30"
           >
             <motion.span
               animate={{ boxShadow: ["0 0 0 0 rgba(201,154,74,0.5)", "0 0 0 14px rgba(201,154,74,0)"] }}
@@ -106,7 +106,7 @@ export function Chatbot() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-void-deep/80 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[1200] flex items-center justify-center bg-void-deep/80 p-4 backdrop-blur-sm"
             onClick={closeChat}
           >
             <motion.div
