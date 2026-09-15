@@ -1,9 +1,19 @@
 import type { ReactNode } from "react";
-import { heroTrackerWaypoints, HERO_TRACKER_CONFIG, projectIso } from "@/lib/heroTrackerData";
+import {
+  heroTrackerWaypoints,
+  HERO_TRACKER_CONFIG,
+  projectIso,
+  projectGeo,
+  projectOffshore,
+  projectPoint,
+} from "@/lib/heroTrackerData";
+import { sightingsData } from "@/lib/sightingsData";
+import { villainsData } from "@/lib/villainsData";
 
 const { gridCols, gridRows, tileWidth: TW, tileHeight: TH } = HERO_TRACKER_CONFIG;
 const HW = TW / 2;
 const HH = TH / 2;
+const CLEAR_RADIUS = TW * 0.68;
 
 // Deterministic pseudo-random so the illustration is stable across reloads.
 function seededRandom(seed: number) {
@@ -17,15 +27,24 @@ function seededRandom(seed: number) {
 }
 
 const LANDMARK_CELLS = [
-  { col: 5, row: 3 },
-  { col: 2, row: 1 },
+  { col: 8, row: 1 },
+  { col: 2, row: 6 },
 ];
 
-const AVENUE_ROW = 0;
-const AVENUE_COL = 8;
+const waypointPts = heroTrackerWaypoints.map((w) => projectGeo(w.lat, w.lng));
+const offshorePt = projectOffshore();
+const roadEdges: [{ x: number; y: number }, { x: number; y: number }][] = heroTrackerWaypoints.map((w, i) => {
+  const next = heroTrackerWaypoints[(i + 1) % heroTrackerWaypoints.length];
+  return [projectGeo(w.lat, w.lng), projectGeo(next.lat, next.lng)];
+});
+// The dashed sea lane out to Lakshadweep — not a road, so the hero never travels it.
+const seaLaneFrom = projectGeo(
+  heroTrackerWaypoints.find((w) => w.id === "s3")!.lat,
+  heroTrackerWaypoints.find((w) => w.id === "s3")!.lng
+);
 
-function isNearWaypoint(col: number, row: number) {
-  return heroTrackerWaypoints.some((w) => Math.abs(w.col - col) <= 1 && Math.abs(w.row - row) <= 1);
+function distance(a: { x: number; y: number }, b: { x: number; y: number }) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function buildingPolys(bx: number, by: number, h: number) {
@@ -58,22 +77,24 @@ export function IsoCityMap({ className = "", children }: { className?: string; c
   for (let row = 0; row < gridRows; row++) {
     for (let col = 0; col < gridCols; col++) {
       const isLandmark = LANDMARK_CELLS.some((l) => l.col === col && l.row === row);
-      if (row === AVENUE_ROW || col === AVENUE_COL) continue;
-      if (isNearWaypoint(col, row) && !isLandmark) continue;
+      const pt = projectIso(col, row);
+      const nearWaypoint = waypointPts.some((w) => distance(w, pt) < CLEAR_RADIUS);
+      if (nearWaypoint && !isLandmark) continue;
       const skipRoll = rand();
-      if (!isLandmark && skipRoll < 0.22) continue;
-      const h = isLandmark ? 58 + rand() * 14 : 22 + rand() * 30;
+      if (!isLandmark && skipRoll < 0.2) continue;
+      const h = isLandmark ? 60 + rand() * 16 : 22 + rand() * 32;
       buildings.push({ col, row, h, landmark: isLandmark });
     }
   }
 
-  const extents = buildings.map((b) => projectIso(b.col, b.row));
-  const waypointPts = heroTrackerWaypoints.map((w) => projectIso(w.col, w.row));
-  const allPts = [...extents, ...waypointPts];
-  const minX = Math.min(...allPts.map((p) => p.x)) - 60;
-  const maxX = Math.max(...allPts.map((p) => p.x)) + 60;
-  const minY = Math.min(...allPts.map((p) => p.y)) - 100;
-  const maxY = Math.max(...allPts.map((p) => p.y)) + 40;
+  const sightingPts = sightingsData.map((s) => projectPoint(s.lat, s.lng));
+  const villainPts = villainsData.map((v) => projectPoint(v.defeatedLocation.lat, v.defeatedLocation.lng));
+  const buildingPts = buildings.map((b) => projectIso(b.col, b.row));
+  const allPts = [...buildingPts, ...waypointPts, ...sightingPts, ...villainPts, offshorePt];
+  const minX = Math.min(...allPts.map((p) => p.x)) - 70;
+  const maxX = Math.max(...allPts.map((p) => p.x)) + 70;
+  const minY = Math.min(...allPts.map((p) => p.y)) - 110;
+  const maxY = Math.max(...allPts.map((p) => p.y)) + 50;
 
   return (
     <svg
@@ -96,35 +117,45 @@ export function IsoCityMap({ className = "", children }: { className?: string; c
       <rect x={minX} y={minY} width={maxX - minX} height={maxY - minY} fill="#071214" />
 
       <polygon
-        points={`${minX},${minY} ${minX + 130},${minY} ${minX + 40},${maxY} ${minX},${maxY}`}
+        points={`${minX},${minY} ${minX + 160},${minY} ${minX + 50},${maxY} ${minX},${maxY}`}
         fill="url(#isoWater)"
       />
 
       {[
-        [minX + 220, minY + 60],
-        [maxX - 180, minY + 40],
-        [minX + 340, maxY - 60],
+        [minX + 260, minY + 70],
+        [maxX - 220, minY + 50],
+        [minX + 400, maxY - 80],
       ].map(([cx, cy], i) => (
-        <ellipse key={i} cx={cx} cy={cy} rx={110} ry={55} fill="url(#isoCloud)" />
+        <ellipse key={i} cx={cx} cy={cy} rx={130} ry={65} fill="url(#isoCloud)" />
       ))}
 
-      {/* street guides along the cleared avenue row/col */}
+      {/* dashed sea lane out to the offshore marker — flavor only, not a road the hero uses */}
       <line
-        x1={projectIso(0, AVENUE_ROW).x}
-        y1={projectIso(0, AVENUE_ROW).y}
-        x2={projectIso(gridCols - 1, AVENUE_ROW).x}
-        y2={projectIso(gridCols - 1, AVENUE_ROW).y}
-        stroke="#123a3c"
-        strokeWidth={3}
+        x1={seaLaneFrom.x}
+        y1={seaLaneFrom.y}
+        x2={offshorePt.x}
+        y2={offshorePt.y}
+        stroke="#2a5a58"
+        strokeWidth={2}
+        strokeDasharray="3 6"
       />
-      <line
-        x1={projectIso(AVENUE_COL, 0).x}
-        y1={projectIso(AVENUE_COL, 0).y}
-        x2={projectIso(AVENUE_COL, gridRows - 1).x}
-        y2={projectIso(AVENUE_COL, gridRows - 1).y}
-        stroke="#123a3c"
-        strokeWidth={3}
-      />
+
+      {/* real roads: the hero's patrol route, drawn from the same waypoints it travels between */}
+      {roadEdges.map(([a, b], i) => (
+        <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#1c4644" strokeWidth={5} strokeLinecap="round" />
+      ))}
+      {roadEdges.map(([a, b], i) => (
+        <line
+          key={`c-${i}`}
+          x1={a.x}
+          y1={a.y}
+          x2={b.x}
+          y2={b.y}
+          stroke="#123a3c"
+          strokeWidth={1}
+          strokeDasharray="6 6"
+        />
+      ))}
 
       {buildings
         .sort((a, b) => a.col + a.row - (b.col + b.row))

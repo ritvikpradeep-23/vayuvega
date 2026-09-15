@@ -1,13 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { heroTrackerWaypoints, HERO_TRACKER_CONFIG, projectIso } from "@/lib/heroTrackerData";
+import { heroTrackerWaypoints, HERO_TRACKER_CONFIG, projectGeo, projectPoint } from "@/lib/heroTrackerData";
+import { sightingsData, type SightingStatus } from "@/lib/sightingsData";
+import { villainsData } from "@/lib/villainsData";
 import { IsoCityMap } from "./IsoCityMap";
 import styles from "./tracker.module.css";
 
 function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
+
+const STATUS_COLOR: Record<SightingStatus, string> = {
+  Resolved: "#22c55e",
+  Reported: "#eab308",
+  "On It": "#f97316",
+};
 
 type Phase = "moving" | "dwelling";
 
@@ -17,7 +25,7 @@ export default function HeroTrackerView() {
   const [phase, setPhase] = useState<Phase>("moving");
   const [pos, setPos] = useState(() => {
     const p = heroTrackerWaypoints[0];
-    return projectIso(p.col, p.row);
+    return projectGeo(p.lat, p.lng);
   });
   const [trail, setTrail] = useState<{ x: number; y: number }[]>([]);
   const reducedMotionRef = useRef(false);
@@ -31,8 +39,8 @@ export default function HeroTrackerView() {
     let cancelled = false;
     const from = heroTrackerWaypoints[fromIdx];
     const to = heroTrackerWaypoints[toIdx];
-    const fromPt = projectIso(from.col, from.row);
-    const toPt = projectIso(to.col, to.row);
+    const fromPt = projectGeo(from.lat, from.lng);
+    const toPt = projectGeo(to.lat, to.lng);
 
     if (phase === "dwelling") {
       setPos(toPt);
@@ -88,6 +96,35 @@ export default function HeroTrackerView() {
   return (
     <div className={styles.isoWrap}>
       <IsoCityMap className={styles.isoSvg}>
+        {sightingsData.map((s) => {
+          const p = projectPoint(s.lat, s.lng);
+          const color = STATUS_COLOR[s.status];
+          return (
+            <g key={s.id}>
+              <circle cx={p.x} cy={p.y} r={7} fill="none" stroke={color} strokeWidth={1.4} opacity={0.55} />
+              <circle cx={p.x} cy={p.y} r={3.4} fill={color} />
+            </g>
+          );
+        })}
+
+        {villainsData.map((v) => {
+          const p = projectPoint(v.defeatedLocation.lat, v.defeatedLocation.lng);
+          const atLarge = v.status === "At Large";
+          return (
+            <g key={v.id}>
+              {atLarge && <circle cx={p.x} cy={p.y} r={9} fill="none" stroke="#ef4444" strokeWidth={1.4} opacity={0.5} />}
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={4}
+                fill={atLarge ? "#ef4444" : "#6f9a95"}
+                stroke={atLarge ? "#ef4444" : "#2a5a58"}
+                strokeWidth={1}
+              />
+            </g>
+          );
+        })}
+
         {trail.map((p, i) => (
           <circle key={i} cx={p.x} cy={p.y} r={3} fill="#4dfff0" opacity={((i + 1) / trail.length) * 0.5} />
         ))}
@@ -101,6 +138,13 @@ export default function HeroTrackerView() {
       <div className={styles.isoHud}>
         <span className={styles.isoHudChip}>WIND · SW 6KM/H</span>
         <span className={styles.isoHudChip}>SIGNAL CLEAR</span>
+      </div>
+
+      <div className={styles.isoLegend}>
+        <span><i style={{ background: "#22c55e" }} /> Resolved</span>
+        <span><i style={{ background: "#eab308" }} /> Reported</span>
+        <span><i style={{ background: "#f97316" }} /> On It</span>
+        <span><i style={{ background: "#ef4444" }} /> Villain</span>
       </div>
 
       <div className={styles.isoRail}>

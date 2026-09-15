@@ -113,11 +113,47 @@
 
 .isoWrap {
   position: relative;
-  height: 480px;
+  height: 720px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--panel-border);
   background: #071214;
+}
+
+@media (max-width: 640px) {
+  .isoWrap {
+    height: 520px;
+  }
+}
+
+.isoLegend {
+  position: absolute;
+  left: 0.9rem;
+  top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 60%;
+}
+
+.isoLegend span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(3, 7, 8, 0.75);
+  border: 1px solid var(--panel-border);
+  color: var(--text-dim);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.5rem;
+  border-radius: 4px;
+}
+
+.isoLegend i {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .isoSvg {
