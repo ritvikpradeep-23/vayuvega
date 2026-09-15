@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { matchReply } from "@/lib/trackerReplies";
+import { trackerSuitsData } from "@/lib/trackerSuitsData";
 import styles from "./tracker.module.css";
 
 interface Msg {
@@ -38,7 +39,7 @@ export default function TrackerChatWidget() {
       setMode("awaiting-sighting");
     } else if (choice === "suit") {
       pushUser("Ask about a suit");
-      pushBot("Which one — Flood Coat, Windbreaker, Waymark, Eye Form, or Storm Skin?");
+      pushBot(`Which one — ${trackerSuitsData.map((s) => s.suitName).join(", ")}?`);
       setMode("awaiting-topic");
     } else {
       pushUser("Ask about a villain");
