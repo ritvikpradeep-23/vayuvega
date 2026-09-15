@@ -650,7 +650,7 @@
 /* ================= scripted chat widget ================= */
 .chatWidget {
   position: fixed;
-  bottom: 1.2rem;
+  bottom: 6.5rem;
   right: 1.2rem;
   z-index: 1200;
   font-family: var(--font-share-tech), monospace;
