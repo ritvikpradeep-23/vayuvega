@@ -10,7 +10,7 @@ const LINKS = [
   { label: "ORIGIN", href: "/#origin" },
   { label: "CASES", href: "/#cases" },
   { label: "COSTUMES", href: "/#costumes" },
-  { label: "SIGHTINGS", href: "/#sightings" },
+  { label: "LIVE OPS", href: "/#sightings" },
   { label: "MEDIA", href: "/media" },
   { label: "VILLAINS", href: "/villains" },
   { label: "TRACKER", href: "/tracker" },
