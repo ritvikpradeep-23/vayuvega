@@ -56,12 +56,22 @@ export function seededRandom(seed: number) {
   };
 }
 
+// A true 1:1 isometric skew (col and row weighted equally on both axes) pulls
+// east-west movement into the vertical axis just as much as north-south does —
+// which visually dragged inland/eastern places (like Idukki) far "south" of
+// coastal places at the same real latitude (like Kochi), scrambling the read.
+// Kerala's real shape is dominantly north-south, so row (south-distance) stays
+// full-weight on Y while col (east-distance) is damped — north-south stays the
+// map's dominant vertical axis, the way an actual map of Kerala reads, with
+// just enough of col's pull left over for a subtle isometric tilt.
+const NORTH_SOUTH_DOMINANCE = 0.38;
+
 /** Projects a (col, row) — grid cell OR any continuous equivalent — to iso pixel space. */
 export function projectIso(col: number, row: number): Point {
   const { tileWidth, tileHeight, originX, originY } = HERO_TRACKER_CONFIG;
   return {
     x: originX + (col - row) * (tileWidth / 2),
-    y: originY + (col + row) * (tileHeight / 2),
+    y: originY + (col * NORTH_SOUTH_DOMINANCE + row) * (tileHeight / 2),
   };
 }
 
