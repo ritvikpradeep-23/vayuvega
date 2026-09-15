@@ -1,40 +1,56 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, RoundedBox, ContactShadows } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import type { TrackerSuitId } from "@/lib/trackerSuitsData";
 
-interface SuitTheme {
-  base: string;
-  baseDark: string;
-  accent: string;
+// One shared hologram look for every suit: the base rig always reads as the
+// same cyan wireframe body, and only the suit-specific gear (amber) changes
+// shape from suit to suit — matching the hologram-bay reference.
+const RIG_COLOR = "#4dfff0";
+const GEAR_COLOR = "#ffb000";
+
+function WireMesh({
+  geometry,
+  color = RIG_COLOR,
+  position,
+  rotation,
+}: {
+  geometry: THREE.BufferGeometry;
+  color?: string;
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+}) {
+  const edges = useMemo(() => new THREE.EdgesGeometry(geometry, 1), [geometry]);
+  return (
+    <lineSegments position={position} rotation={rotation} geometry={edges}>
+      <lineBasicMaterial color={color} transparent opacity={0.9} />
+    </lineSegments>
+  );
 }
 
-const SUIT_THEME: Record<TrackerSuitId, SuitTheme> = {
-  thattu: { base: "#3a3226", baseDark: "#211c14", accent: "#8b8aa8" },
-  "kera-tech": { base: "#4a3420", baseDark: "#2e2012", accent: "#4dfff0" },
-  "kayal-stealth": { base: "#17181a", baseDark: "#0c0d0e", accent: "#2fa0a0" },
-  "kaithapoo-storm": { base: "#4a4d52", baseDark: "#2e3033", accent: "#ffe14d" },
-  "theyyam-integrated": { base: "#6e1e24", baseDark: "#4a1418", accent: "#d4af37" },
-};
-
-function PulseGlow({ color, position }: { color: string; position: [number, number, number] }) {
+function PulseRing({ color, position }: { color: string; position: [number, number, number] }) {
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
-    const mat = ref.current?.material as THREE.MeshStandardMaterial | undefined;
-    if (mat) mat.emissiveIntensity = 0.6 + Math.sin(clock.elapsedTime * 2.4) * 0.5;
+    const mat = ref.current?.material as THREE.MeshBasicMaterial | undefined;
+    if (mat) mat.opacity = 0.4 + Math.sin(clock.elapsedTime * 2.4) * 0.35;
   });
   return (
-    <mesh ref={ref} position={position}>
-      <sphereGeometry args={[0.045, 16, 16]} />
-      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
+    <mesh ref={ref} position={position} rotation={[Math.PI / 2, 0, 0]}>
+      <ringGeometry args={[0.05, 0.065, 24]} />
+      <meshBasicMaterial color={color} transparent opacity={0.7} toneMapped={false} />
     </mesh>
   );
 }
 
-function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string }) {
+function SuitExtras({ suitId }: { suitId: TrackerSuitId }) {
+  const torus = (r: number, tube: number, arc?: number) =>
+    new THREE.TorusGeometry(r, tube, 8, 24, arc ?? Math.PI * 2);
+  const box = (x: number, y: number, z: number) => new THREE.BoxGeometry(x, y, z);
+  const cone = (r: number, h: number, seg = 4) => new THREE.ConeGeometry(r, h, seg);
+
   switch (suitId) {
     case "thattu":
       return (
@@ -46,10 +62,13 @@ function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string 
             [Math.PI / 4, 0.97],
             [-Math.PI / 4, 0.97],
           ].map(([rot, y], i) => (
-            <mesh key={`x${i}`} position={[0, y, 0.15]} rotation={[0, 0, rot]}>
-              <boxGeometry args={[0.42, 0.014, 0.01]} />
-              <meshStandardMaterial color={accent} roughness={0.9} />
-            </mesh>
+            <WireMesh
+              key={`x${i}`}
+              geometry={box(0.42, 0.05, 0.02)}
+              color={GEAR_COLOR}
+              position={[0, y, 0.15]}
+              rotation={[0, 0, rot]}
+            />
           ))}
           {/* salvaged bicycle-chain joints */}
           {[
@@ -58,10 +77,7 @@ function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string 
             [-0.11, 0.05],
             [0.11, 0.05],
           ].map(([x, y], i) => (
-            <mesh key={`j${i}`} position={[x, y, 0.08]}>
-              <torusGeometry args={[0.045, 0.012, 8, 16]} />
-              <meshStandardMaterial color={accent} metalness={0.6} roughness={0.4} />
-            </mesh>
+            <WireMesh key={`j${i}`} geometry={torus(0.045, 0.012)} color={GEAR_COLOR} position={[x, y, 0.08]} />
           ))}
         </group>
       );
@@ -69,36 +85,26 @@ function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string 
       return (
         <group>
           {[0.65, 0.82, 1.0, 1.17].map((y) => (
-            <mesh key={y} position={[0, y, 0.145]}>
-              <boxGeometry args={[0.03, 0.06, 0.01]} />
-              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.9} toneMapped={false} />
-            </mesh>
+            <WireMesh key={y} geometry={box(0.05, 0.09, 0.02)} color={GEAR_COLOR} position={[0, y, 0.145]} />
           ))}
           {[-1, 1].map((side) => (
-            <mesh
+            <WireMesh
               key={side}
+              geometry={cone(0.03, 0.38, 3)}
+              color={GEAR_COLOR}
               position={[side * 0.42, 0.66, -0.04]}
               rotation={[0, 0, side * -0.55]}
-            >
-              <coneGeometry args={[0.02, 0.38, 3]} />
-              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.5} toneMapped={false} />
-            </mesh>
+            />
           ))}
         </group>
       );
     case "kayal-stealth":
       return (
         <group>
-          <mesh position={[0.34, 0.36, 0.03]} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.06, 0.013, 8, 24]} />
-            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.8} toneMapped={false} />
-          </mesh>
-          <PulseGlow color={accent} position={[0.34, 0.36, 0.03]} />
+          <WireMesh geometry={torus(0.06, 0.013)} color={GEAR_COLOR} position={[0.34, 0.36, 0.03]} rotation={[Math.PI / 2, 0, 0]} />
+          <PulseRing color={GEAR_COLOR} position={[0.34, 0.36, 0.035]} />
           {[-0.11, 0.11].map((x) => (
-            <mesh key={x} position={[x, 0.02, -0.02]} rotation={[Math.PI / 2, 0, 0]}>
-              <coneGeometry args={[0.05, 0.06, 12]} />
-              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.5} toneMapped={false} />
-            </mesh>
+            <WireMesh key={x} geometry={cone(0.05, 0.08, 12)} color={GEAR_COLOR} position={[x, 0.02, -0.02]} rotation={[Math.PI / 2, 0, 0]} />
           ))}
         </group>
       );
@@ -113,19 +119,19 @@ function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string 
       bolt.lineTo(0, 0.22);
       return (
         <group>
-          <mesh position={[0, 0.86, -0.16]} rotation={[0, Math.PI, 0]}>
-            <torusGeometry args={[0.3, 0.03, 8, 24, Math.PI * 0.6]} />
-            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.4} toneMapped={false} />
-          </mesh>
-          <mesh position={[0.02, 0.9, -0.16]}>
-            <extrudeGeometry args={[bolt, { depth: 0.02, bevelEnabled: false }]} />
-            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.9} toneMapped={false} />
-          </mesh>
+          <WireMesh
+            geometry={torus(0.3, 0.03, Math.PI * 0.6)}
+            color={GEAR_COLOR}
+            position={[0, 0.86, -0.16]}
+            rotation={[0, Math.PI, 0]}
+          />
+          <WireMesh
+            geometry={new THREE.ExtrudeGeometry(bolt, { depth: 0.02, bevelEnabled: false })}
+            color={GEAR_COLOR}
+            position={[0.02, 0.9, -0.16]}
+          />
           {[-0.34, 0.34].map((x) => (
-            <mesh key={x} position={[x, 0.58, 0.05]} rotation={[0, 0, Math.PI / 2]}>
-              <torusGeometry args={[0.08, 0.018, 8, 20]} />
-              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.6} toneMapped={false} />
-            </mesh>
+            <WireMesh key={x} geometry={torus(0.08, 0.018)} color={GEAR_COLOR} position={[x, 0.58, 0.05]} rotation={[0, 0, Math.PI / 2]} />
           ))}
         </group>
       );
@@ -137,22 +143,18 @@ function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string 
           {Array.from({ length: 7 }).map((_, i) => {
             const angle = (i / 6) * Math.PI - Math.PI / 2;
             return (
-              <mesh
+              <WireMesh
                 key={i}
+                geometry={cone(0.02, 0.22, 4)}
+                color={GEAR_COLOR}
                 position={[Math.sin(angle) * 0.22, 1.56 + Math.cos(angle) * 0.1, -0.04]}
                 rotation={[0, 0, -angle]}
-              >
-                <coneGeometry args={[0.02, 0.22, 4]} />
-                <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.6} toneMapped={false} />
-              </mesh>
+              />
             );
           })}
           {/* HUD lenses */}
           {[-0.05, 0.05].map((x) => (
-            <mesh key={x} position={[x, 1.37, 0.15]}>
-              <sphereGeometry args={[0.02, 12, 12]} />
-              <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={1} toneMapped={false} />
-            </mesh>
+            <WireMesh key={x} geometry={new THREE.SphereGeometry(0.02, 8, 6)} color={GEAR_COLOR} position={[x, 1.37, 0.15]} />
           ))}
           {/* temple-brass joint rings */}
           {[
@@ -161,10 +163,7 @@ function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string 
             [-0.11, 0.55],
             [0.11, 0.55],
           ].map(([x, y], i) => (
-            <mesh key={i} position={[x, y, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <torusGeometry args={[0.075, 0.014, 8, 20]} />
-              <meshStandardMaterial color={accent} metalness={0.7} roughness={0.3} emissive={accent} emissiveIntensity={0.3} toneMapped={false} />
-            </mesh>
+            <WireMesh key={i} geometry={torus(0.075, 0.014)} color={GEAR_COLOR} position={[x, y, 0]} rotation={[0, 0, Math.PI / 2]} />
           ))}
         </group>
       );
@@ -172,38 +171,53 @@ function SuitExtras({ suitId, accent }: { suitId: TrackerSuitId; accent: string 
 }
 
 function SuitFigure({ suitId }: { suitId: TrackerSuitId }) {
-  const theme = SUIT_THEME[suitId];
+  const torso = useMemo(() => new THREE.BoxGeometry(0.46, 0.58, 0.26), []);
+  const head = useMemo(() => new THREE.IcosahedronGeometry(0.17, 1), []);
+  const upperLimb = useMemo(() => new THREE.CylinderGeometry(0.065, 0.06, 0.28, 8), []);
+  const lowerLimb = useMemo(() => new THREE.CylinderGeometry(0.06, 0.05, 0.26, 8), []);
+  const upperLeg = useMemo(() => new THREE.CylinderGeometry(0.08, 0.07, 0.3, 8), []);
+  const lowerLeg = useMemo(() => new THREE.CylinderGeometry(0.07, 0.06, 0.26, 8), []);
+  const joint = useMemo(() => new THREE.TorusGeometry(0.045, 0.008, 6, 16), []);
+
   return (
     <group>
-      {[-0.11, 0.11].map((x) => (
-        <RoundedBox key={x} args={[0.16, 0.55, 0.16]} radius={0.04} position={[x, 0.275, 0]}>
-          <meshStandardMaterial color={theme.baseDark} roughness={0.6} metalness={0.2} />
-        </RoundedBox>
-      ))}
-      <RoundedBox args={[0.5, 0.62, 0.28]} radius={0.07} position={[0, 0.86, 0]}>
-        <meshStandardMaterial color={theme.base} roughness={0.55} metalness={0.25} />
-      </RoundedBox>
+      <WireMesh geometry={torso} position={[0, 0.86, 0]} />
+      <WireMesh geometry={head} position={[0, 1.36, 0]} />
+
+      {/* arms: upper + elbow joint + forearm */}
       {[-0.34, 0.34].map((x) => (
-        <RoundedBox
-          key={x}
-          args={[0.14, 0.56, 0.14]}
-          radius={0.04}
-          position={[x, 0.58, 0]}
-          rotation={[0, 0, x < 0 ? 0.1 : -0.1]}
-        >
-          <meshStandardMaterial color={theme.base} roughness={0.55} metalness={0.25} />
-        </RoundedBox>
+        <group key={`arm-${x}`}>
+          <WireMesh geometry={upperLimb} position={[x, 0.78, 0]} rotation={[0, 0, x < 0 ? 0.14 : -0.14]} />
+          <WireMesh geometry={joint} position={[x, 0.63, 0]} rotation={[Math.PI / 2, 0, 0]} />
+          <WireMesh geometry={lowerLimb} position={[x, 0.47, 0]} rotation={[0, 0, x < 0 ? 0.06 : -0.06]} />
+        </group>
       ))}
-      <RoundedBox args={[0.32, 0.32, 0.32]} radius={0.09} position={[0, 1.36, 0]}>
-        <meshStandardMaterial color={theme.baseDark} roughness={0.5} metalness={0.15} />
-      </RoundedBox>
-      <SuitExtras suitId={suitId} accent={theme.accent} />
+
+      {/* shoulder joints */}
+      {[-0.23, 0.23].map((x) => (
+        <WireMesh key={`sh-${x}`} geometry={joint} position={[x, 1.1, 0]} rotation={[Math.PI / 2, 0, 0]} />
+      ))}
+
+      {/* legs: thigh + knee joint + shin */}
+      {[-0.11, 0.11].map((x) => (
+        <group key={`leg-${x}`}>
+          <WireMesh geometry={upperLeg} position={[x, 0.42, 0]} />
+          <WireMesh geometry={joint} position={[x, 0.27, 0]} rotation={[Math.PI / 2, 0, 0]} />
+          <WireMesh geometry={lowerLeg} position={[x, 0.13, 0]} />
+        </group>
+      ))}
+
+      {/* hip joints */}
+      {[-0.11, 0.11].map((x) => (
+        <WireMesh key={`hip-${x}`} geometry={joint} position={[x, 0.58, 0]} rotation={[Math.PI / 2, 0, 0]} />
+      ))}
+
+      <SuitExtras suitId={suitId} />
     </group>
   );
 }
 
 export default function SuitModel3D({ suitId }: { suitId: TrackerSuitId }) {
-  const theme = SUIT_THEME[suitId];
   const [autoRotate, setAutoRotate] = useState(true);
 
   useEffect(() => {
@@ -213,30 +227,35 @@ export default function SuitModel3D({ suitId }: { suitId: TrackerSuitId }) {
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <Canvas camera={{ position: [1.8, 1.4, 2.2], fov: 32 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
+      <Canvas camera={{ position: [1.7, 1.3, 2.1], fov: 32 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
         <color attach="background" args={["#050b0c"]} />
-        <ambientLight intensity={0.55} />
-        <directionalLight position={[3, 4, 2]} intensity={1.1} color="#eafffb" />
-        <pointLight position={[-2, 1.2, -1]} intensity={0.6} color={theme.accent} />
 
         <group position={[0, -0.75, 0]}>
           <SuitFigure suitId={suitId} />
         </group>
 
-        {[0.55, 0.78].map((r, i) => (
-          <mesh key={r} position={[0, -0.75, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[r, r + 0.012, 64]} />
-            <meshBasicMaterial color={theme.accent} transparent opacity={i === 0 ? 0.5 : 0.25} toneMapped={false} />
+        {/* perspective hologram floor */}
+        <gridHelper args={[2.4, 10, RIG_COLOR, "#123a3c"]} position={[0, -0.749, 0]} />
+
+        {/* light-ring pedestal */}
+        {[0.5, 0.7].map((r, i) => (
+          <mesh key={r} position={[0, -0.748, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[r, r + 0.01, 64]} />
+            <meshBasicMaterial color={RIG_COLOR} transparent opacity={i === 0 ? 0.55 : 0.25} toneMapped={false} />
           </mesh>
         ))}
 
-        <ContactShadows position={[0, -0.75, 0]} opacity={0.5} scale={3} blur={2.2} far={2} />
+        {/* soft grounding shadow */}
+        <mesh position={[0, -0.747, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.42, 32]} />
+          <meshBasicMaterial color="#000000" transparent opacity={0.35} />
+        </mesh>
 
         <OrbitControls
           makeDefault
           enablePan={false}
-          minDistance={1.6}
-          maxDistance={3.4}
+          minDistance={1.5}
+          maxDistance={3.2}
           minPolarAngle={Math.PI / 6}
           maxPolarAngle={Math.PI / 2.1}
           autoRotate={autoRotate}
