@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { heroTrackerWaypoints, HERO_TRACKER_CONFIG, projectGeo, projectPoint } from "@/lib/heroTrackerData";
+import { heroRoadEdges, HERO_TRACKER_CONFIG, pointOnPath, projectPoint } from "@/lib/heroTrackerData";
 import { sightingsData, type SightingStatus } from "@/lib/sightingsData";
 import { villainsData } from "@/lib/villainsData";
 import { IsoCityMap } from "./IsoCityMap";
@@ -20,13 +20,9 @@ const STATUS_COLOR: Record<SightingStatus, string> = {
 type Phase = "moving" | "dwelling";
 
 export default function HeroTrackerView() {
-  const [fromIdx, setFromIdx] = useState(0);
-  const [toIdx, setToIdx] = useState(1 % heroTrackerWaypoints.length);
+  const [edgeIdx, setEdgeIdx] = useState(0);
   const [phase, setPhase] = useState<Phase>("moving");
-  const [pos, setPos] = useState(() => {
-    const p = heroTrackerWaypoints[0];
-    return projectGeo(p.lat, p.lng);
-  });
+  const [pos, setPos] = useState(() => heroRoadEdges[0].path[0]);
   const [trail, setTrail] = useState<{ x: number; y: number }[]>([]);
   const reducedMotionRef = useRef(false);
   const rafRef = useRef<number | null>(null);
@@ -37,18 +33,15 @@ export default function HeroTrackerView() {
 
   useEffect(() => {
     let cancelled = false;
-    const from = heroTrackerWaypoints[fromIdx];
-    const to = heroTrackerWaypoints[toIdx];
-    const fromPt = projectGeo(from.lat, from.lng);
-    const toPt = projectGeo(to.lat, to.lng);
+    const edge = heroRoadEdges[edgeIdx];
+    const endPt = edge.path[edge.path.length - 1];
 
     if (phase === "dwelling") {
-      setPos(toPt);
+      setPos(endPt);
       setTrail([]);
       const timer = setTimeout(() => {
         if (cancelled) return;
-        setFromIdx(toIdx);
-        setToIdx((toIdx + 1) % heroTrackerWaypoints.length);
+        setEdgeIdx((edgeIdx + 1) % heroRoadEdges.length);
         setPhase("moving");
       }, HERO_TRACKER_CONFIG.dwellMs);
       return () => {
@@ -58,7 +51,7 @@ export default function HeroTrackerView() {
     }
 
     if (reducedMotionRef.current) {
-      setPos(toPt);
+      setPos(endPt);
       setTrail([]);
       const timer = setTimeout(() => {
         if (!cancelled) setPhase("dwelling");
@@ -74,10 +67,9 @@ export default function HeroTrackerView() {
       const elapsed = now - start;
       const t = Math.min(1, elapsed / HERO_TRACKER_CONFIG.moveDurationMs);
       const eased = easeInOutCubic(t);
-      const x = fromPt.x + (toPt.x - fromPt.x) * eased;
-      const y = fromPt.y + (toPt.y - fromPt.y) * eased;
-      setPos({ x, y });
-      setTrail((prev) => [...prev, { x, y }].slice(-10));
+      const p = pointOnPath(edge.path, eased);
+      setPos(p);
+      setTrail((prev) => [...prev, p].slice(-12));
       if (t < 1 && !cancelled) {
         rafRef.current = requestAnimationFrame(tick);
       } else if (!cancelled) {
@@ -89,9 +81,9 @@ export default function HeroTrackerView() {
       cancelled = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [fromIdx, toIdx, phase]);
+  }, [edgeIdx, phase]);
 
-  const destination = heroTrackerWaypoints[toIdx];
+  const edge = heroRoadEdges[edgeIdx];
 
   return (
     <div className={styles.isoWrap}>
@@ -154,7 +146,7 @@ export default function HeroTrackerView() {
       </div>
 
       <p className={styles.isoStatusLine}>
-        {phase === "moving" ? `En route to ${destination.label}` : `Holding at ${destination.label}`}
+        {phase === "moving" ? `En route to ${edge.toLabel}` : `Holding at ${edge.toLabel}`}
       </p>
     </div>
   );

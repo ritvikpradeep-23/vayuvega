@@ -124,6 +124,14 @@
   .isoWrap {
     height: 520px;
   }
+
+  .isoLegend {
+    max-width: 92%;
+  }
+
+  .isoHud {
+    top: 4.9rem;
+  }
 }
 
 .isoLegend {
