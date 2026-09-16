@@ -1,5 +1,5 @@
 import { villainsData } from "./villainsData";
-import { trackerSuitsData } from "./trackerSuitsData";
+import { costumeData } from "./costumeData";
 import { sightingsData } from "./sightingsData";
 
 const THANKS_WORDS = ["thank", "thanks", "grateful", "appreciate", "hero", "legend", "amazing", "awesome"];
@@ -45,11 +45,11 @@ export function matchReply(input: string): MatchedReply {
     };
   }
 
-  const suit = trackerSuitsData.find((s) => lower.includes(s.suitName.toLowerCase()));
+  const suit = costumeData.find((c) => lower.includes(c.suitName.toLowerCase()));
   if (suit) {
     return {
       category: "suit",
-      text: `${suit.suitName} — ${suit.usedFor} "${suit.caption}"`,
+      text: `${suit.suitName} (${suit.year}, ${suit.material}): ${suit.description}`,
     };
   }
 
