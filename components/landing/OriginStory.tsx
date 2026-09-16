@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { originContent } from "@/lib/heroContent";
+import { OriginAtmosphere } from "./OriginAtmosphere";
 
 export function OriginStory() {
   return (
@@ -42,9 +43,10 @@ export function OriginStory() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="relative"
         >
-          <div className="rain-texture relative aspect-[4/5] rounded-[28px] border border-card-border bg-gradient-to-b from-[#1a2c40] via-[#13233a] to-[#0b1622]">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] border border-card-border">
+            <OriginAtmosphere className="absolute inset-0 h-full w-full" />
             <div className="absolute left-4 top-4 rounded-full border border-card-border bg-void/70 px-2.5 py-1 text-[9px] font-semibold tracking-wide text-mist backdrop-blur">
-              ATMOSPHERIC PHOTO — PLACEHOLDER
+              ATMOSPHERIC ILLUSTRATION — THRISSUR, 2006
             </div>
           </div>
           <div className="absolute inset-x-6 bottom-6 rounded-2xl border border-card-border bg-void/90 p-4 backdrop-blur">

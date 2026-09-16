@@ -6,6 +6,7 @@ import { chatCopy } from "@/lib/chatCopy";
 import { chatReducer, initialChatState } from "./chatReducer";
 import { MessageBubble } from "./MessageBubble";
 import { TransmittingBeat } from "./TransmittingBeat";
+import { TypingBeat } from "./TypingBeat";
 import { useChatWidget } from "./ChatWidgetProvider";
 import type { ChatStep } from "./chatTypes";
 
@@ -23,10 +24,37 @@ export function Chatbot() {
   const { isOpen, closeChat, openChat } = useChatWidget();
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
   const [input, setInput] = useState("");
+  const [revealedCount, setRevealedCount] = useState(initialChatState.messages.length);
+  const [typing, setTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [state.messages, state.step, revealedCount, typing]);
+
+  // Give each bot reply a brief, human-feeling "typing" beat before it appears.
+  // The reducer appends the visitor's own message and the bot's reply in the
+  // same update, so reveal everything except a trailing bot message right
+  // away (that's what surfaces the visitor's bubble instantly) and only hold
+  // back the bot's reply — skipped entirely for confirm/error, which already
+  // follow the deliberate transmitting delay.
+  useEffect(() => {
+    if (state.messages.length <= revealedCount) return;
+    const latest = state.messages[state.messages.length - 1];
+    if (latest.from === "user" || state.step === "confirmed" || state.step === "error") {
+      setRevealedCount(state.messages.length);
+      return;
+    }
+    const revealNowCount = state.messages.length - 1;
+    if (revealNowCount > revealedCount) setRevealedCount(revealNowCount);
+    setTyping(true);
+    const delay = 500 + Math.random() * 650;
+    const t = setTimeout(() => {
+      setTyping(false);
+      setRevealedCount(state.messages.length);
+    }, delay);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.messages, state.step]);
 
   useEffect(() => {
@@ -73,7 +101,7 @@ export function Chatbot() {
 
   const handleRetry = () => dispatch({ type: "RETRY" });
 
-  const isInputDisabled = state.step === "transmitting" || state.step === "confirmed" || state.step === "error";
+  const isInputDisabled = state.step === "transmitting" || state.step === "confirmed" || state.step === "error" || typing;
   const placeholder = state.step === "confirmed" ? "Signal received." : PLACEHOLDER_BY_STEP[state.step] ?? "Type your reply...";
 
   return (
@@ -141,9 +169,10 @@ export function Chatbot() {
               </div>
 
               <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-                {state.messages.map((m) => (
+                {state.messages.slice(0, revealedCount).map((m) => (
                   <MessageBubble key={m.id} message={m} />
                 ))}
+                {typing && <TypingBeat />}
                 {state.step === "transmitting" && <TransmittingBeat />}
               </div>
 

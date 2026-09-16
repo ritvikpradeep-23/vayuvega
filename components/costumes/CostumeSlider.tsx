@@ -1,10 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { costumeData } from "@/lib/costumeData";
 import { CostumeBadge } from "./CostumeBadge";
 import { HUDPanel } from "@/components/ui/HUDPanel";
+
+const CostumeModel3D = dynamic(() => import("./CostumeModel3D"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full w-full items-center justify-center text-xs text-mist">Loading 3D model…</div>
+  ),
+});
 
 export function CostumeSlider() {
   const [index, setIndex] = useState(0);
@@ -47,11 +55,11 @@ export function CostumeSlider() {
             transition={{ duration: 0.3 }}
             className="relative"
           >
-            <div className="relative flex aspect-[4/5] items-center justify-center rounded-[28px] border border-card-border bg-gradient-to-b from-[#152534] to-[#0b1622]">
-              <div className="absolute left-4 top-4 rounded-full border border-card-border bg-void/70 px-2.5 py-1 text-[9px] font-semibold tracking-wide text-mist backdrop-blur">
-                COSTUME PORTRAIT — PLACEHOLDER
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] border border-card-border bg-gradient-to-b from-[#152534] to-[#0b1622]">
+              <div className="absolute left-4 top-4 z-10 rounded-full border border-card-border bg-void/70 px-2.5 py-1 text-[9px] font-semibold tracking-wide text-mist backdrop-blur">
+                {current.suitName.toUpperCase()} — 3D MODEL
               </div>
-              <CostumeBadge era={current.era} id={`costume-large-${current.year}`} className="h-2/3 w-2/3" />
+              <CostumeModel3D era={current.era} />
             </div>
             <div className="absolute inset-x-6 bottom-6 rounded-2xl border border-card-border bg-void/90 p-4 backdrop-blur">
               <p className="text-xs font-semibold text-mist">{current.year} · {current.material}</p>
